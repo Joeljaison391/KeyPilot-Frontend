@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Key, Menu, X, Github } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   const handleTryDemo = () => {
-    toast.success('Demo access granted! 🚀')
-    // Add demo logic here
+    toast.success('Redirecting to demo login... 🚀')
+    navigate('/login')
   }
 
   const handleLogin = () => {
     toast.success('Redirecting to login... 🔐')
-    // Add login logic here
+    navigate('/login')
   }
 
   return (

@@ -1,16 +1,19 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Play, ArrowRight, Shield, Zap, Database } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Hero = () => {
+  const navigate = useNavigate()
+
   const handleTryDemo = () => {
-    toast.success('🚀 Demo environment loading...')
-    // Demo logic here
+    toast.success('🚀 Redirecting to demo login...')
+    navigate('/login')
   }
 
   const handleGetStarted = () => {
-    toast.success('🎯 Redirecting to signup...')
-    // Signup logic here
+    toast.success('🎯 Redirecting to demo login...')
+    navigate('/login')
   }
 
   return (

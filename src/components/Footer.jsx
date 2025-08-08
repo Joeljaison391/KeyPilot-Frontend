@@ -1,15 +1,19 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Key, Github, Twitter, Globe, Mail, Heart } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Footer = () => {
+  const navigate = useNavigate()
+
   const handleNewsletterSignup = (e) => {
     e.preventDefault()
     toast.success('🎉 Thanks for subscribing!')
   }
 
   const handleTryDemo = () => {
-    toast.success('🚀 Demo loading...')
+    toast.success('🚀 Redirecting to demo login...')
+    navigate('/login')
   }
 
   const links = {
