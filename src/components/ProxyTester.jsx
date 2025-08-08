@@ -71,7 +71,6 @@ function ProxyTester() {
     setLoading(true)
     try {
       const requestBody = {
-        token: token,
         intent: request.intent,
         payload: request.payload,
         origin: request.origin
@@ -81,6 +80,7 @@ function ProxyTester() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(requestBody)
       })
@@ -131,7 +131,6 @@ function ProxyTester() {
 
   const generateCurl = () => {
     const requestBody = {
-      token: token || 'YOUR_SESSION_TOKEN',
       intent: request.intent,
       payload: request.payload,
       origin: request.origin
@@ -139,6 +138,7 @@ function ProxyTester() {
 
     return `curl -X POST "https://keypilot.onrender.com/api/proxy" \\
   -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${token || 'YOUR_SESSION_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`
   }
 

@@ -31,7 +31,6 @@ function IntentTester() {
     setLoading(true)
     try {
       const requestBody = {
-        token: token,
         intent: intent,
         debug_level: debugLevel
       }
@@ -40,6 +39,7 @@ function IntentTester() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(requestBody)
       })
@@ -71,13 +71,13 @@ function IntentTester() {
 
   const generateCurl = () => {
     const requestBody = {
-      token: token || 'YOUR_SESSION_TOKEN',
       intent: intent,
       debug_level: debugLevel
     }
 
     return `curl -X POST "https://keypilot.onrender.com/api/proxy/test" \\
   -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${token || 'YOUR_SESSION_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`
   }
 

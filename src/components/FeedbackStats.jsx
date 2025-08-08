@@ -17,14 +17,11 @@ function FeedbackStats() {
 
     setLoading(true)
     try {
-      const queryParams = new URLSearchParams({
-        token: token
-      })
-
-      const response = await fetch(`https://keypilot.onrender.com/api/feedback-stats?${queryParams}`, {
+      const response = await fetch(`https://keypilot.onrender.com/api/feedback-stats`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
       })
 
@@ -58,12 +55,9 @@ function FeedbackStats() {
   }, [])
 
   const generateCurl = () => {
-    const queryParams = new URLSearchParams({
-      token: token || 'YOUR_TOKEN'
-    })
-
-    return `curl -X GET "https://keypilot.onrender.com/api/feedback-stats?${queryParams}" \\
-  -H "Content-Type: application/json"`
+    return `curl -X GET "https://keypilot.onrender.com/api/feedback-stats" \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}"`
   }
 
   const getScoreColor = (score) => {

@@ -22,7 +22,6 @@ function CacheInspector() {
     setLoading(true)
     try {
       const queryParams = new URLSearchParams({
-        token: token,
         similarity_threshold: params.similarity_threshold,
         min_cluster_size: params.min_cluster_size
       })
@@ -31,6 +30,7 @@ function CacheInspector() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
       })
 
@@ -77,13 +77,13 @@ function CacheInspector() {
 
   const generateCurl = () => {
     const queryParams = new URLSearchParams({
-      token: token || 'YOUR_TOKEN',
       similarity_threshold: params.similarity_threshold,
       min_cluster_size: params.min_cluster_size
     })
 
     return `curl -X GET "https://keypilot.onrender.com/api/cache-inspector?${queryParams}" \\
-  -H "Content-Type: application/json"`
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}"`
   }
 
   return (
