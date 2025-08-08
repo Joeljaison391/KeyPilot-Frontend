@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Base API configuration
-const API_BASE_URL = 'http://localhost:3000'
+const API_BASE_URL = 'https://keypilot.onrender.com'
 
 // Create axios instance
 const apiClient = axios.create({
@@ -34,13 +34,13 @@ apiClient.interceptors.response.use(
   (error) => {
     // Handle different error scenarios
     if (error.code === 'ECONNREFUSED') {
-      console.error('Backend server is not running on localhost:3000')
+      console.error('Backend server is not running on keypilot.onrender.com')
       return Promise.reject({
         response: {
           data: {
             success: false,
             error: 'Connection failed',
-            message: 'Backend server is not available. Please make sure it\'s running on localhost:3000'
+            message: 'Backend server is not available. Please check your connection to keypilot.onrender.com'
           }
         }
       })

@@ -36,7 +36,7 @@ function IntentTester() {
         debug_level: debugLevel
       }
 
-      const response = await fetch('http://localhost:3000/api/proxy/test', {
+      const response = await fetch('https://keypilot.onrender.com/api/proxy/test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ function IntentTester() {
       debug_level: debugLevel
     }
 
-    return `curl -X POST "http://localhost:3000/api/proxy/test" \\
+    return `curl -X POST "https://keypilot.onrender.com/api/proxy/test" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`
   }

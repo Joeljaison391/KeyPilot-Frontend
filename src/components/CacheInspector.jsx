@@ -27,7 +27,7 @@ function CacheInspector() {
         min_cluster_size: params.min_cluster_size
       })
 
-      const response = await fetch(`http://localhost:3000/api/cache-inspector?${queryParams}`, {
+      const response = await fetch(`https://keypilot.onrender.com/api/cache-inspector?${queryParams}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ function CacheInspector() {
       min_cluster_size: params.min_cluster_size
     })
 
-    return `curl -X GET "http://localhost:3000/api/cache-inspector?${queryParams}" \\
+    return `curl -X GET "https://keypilot.onrender.com/api/cache-inspector?${queryParams}" \\
   -H "Content-Type: application/json"`
   }
 

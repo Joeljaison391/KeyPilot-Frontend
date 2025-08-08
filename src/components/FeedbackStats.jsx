@@ -21,7 +21,7 @@ function FeedbackStats() {
         token: token
       })
 
-      const response = await fetch(`http://localhost:3000/api/feedback-stats?${queryParams}`, {
+      const response = await fetch(`https://keypilot.onrender.com/api/feedback-stats?${queryParams}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ function FeedbackStats() {
       token: token || 'YOUR_TOKEN'
     })
 
-    return `curl -X GET "http://localhost:3000/api/feedback-stats?${queryParams}" \\
+    return `curl -X GET "https://keypilot.onrender.com/api/feedback-stats?${queryParams}" \\
   -H "Content-Type: application/json"`
   }
 

@@ -77,7 +77,7 @@ function ProxyTester() {
         origin: request.origin
       }
 
-      const response = await fetch('http://localhost:3000/api/proxy', {
+      const response = await fetch('https://keypilot.onrender.com/api/proxy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ function ProxyTester() {
       origin: request.origin
     }
 
-    return `curl -X POST "http://localhost:3000/api/proxy" \\
+    return `curl -X POST "https://keypilot.onrender.com/api/proxy" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`
   }
