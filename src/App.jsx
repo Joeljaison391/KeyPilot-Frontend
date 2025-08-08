@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import LandingPage from './components/LandingPage'
 import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
+import Playground from './pages/Playground'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
 
@@ -23,6 +24,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/playground" 
+              element={
+                <ProtectedRoute>
+                  <Playground />
                 </ProtectedRoute>
               } 
             />

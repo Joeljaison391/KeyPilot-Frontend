@@ -142,4 +142,70 @@ export const api = {
   }
 }
 
+// API Keys management
+export const apiKeysAPI = {
+  // Add new API key
+  addKey: async (keyData) => {
+    try {
+      const response = await apiClient.post('/auth/add-key', keyData)
+      return response
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Get user's API keys
+  getMyKeys: async () => {
+    try {
+      const response = await apiClient.get('/keys/my-keys')
+      return response
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Update API key
+  updateKey: async (keyData) => {
+    try {
+      const response = await apiClient.put('/auth/update-key', keyData)
+      return response
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Delete API key
+  deleteKey: async (template, confirm = true) => {
+    try {
+      const token = localStorage.getItem('keypilot_token')
+      const response = await apiClient.delete('/auth/delete-key', {
+        data: { token, template, confirm }
+      })
+      return response
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Get available templates
+  getTemplates: async () => {
+    try {
+      const response = await apiClient.get('/api/templates')
+      return response
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Get specific template details
+  getTemplate: async (templateId) => {
+    try {
+      const response = await apiClient.get(`/api/templates/${templateId}`)
+      return response
+    } catch (error) {
+      throw error
+    }
+  }
+}
+
 export default apiClient
