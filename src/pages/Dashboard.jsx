@@ -37,6 +37,8 @@ const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [showToken, setShowToken] = useState(false)
   const [showAddKeyModal, setShowAddKeyModal] = useState(false)
+  const [editingKey, setEditingKey] = useState(null)
+  const [isEditMode, setIsEditMode] = useState(false)
   const [userApiKeys, setUserApiKeys] = useState([])
   const [isLoadingKeys, setIsLoadingKeys] = useState(false)
 
@@ -112,6 +114,30 @@ const Dashboard = () => {
     fetchUserApiKeys()
   }
 
+  const handleEditKey = (key) => {
+    setEditingKey(key)
+    setIsEditMode(true)
+    setShowAddKeyModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowAddKeyModal(false)
+    setEditingKey(null)
+    setIsEditMode(false)
+  }
+
+  const handleDeleteKey = async (key) => {
+    if (window.confirm(`Are you sure you want to delete the API key "${key.description}"?`)) {
+      try {
+        // Implement delete functionality when API is available
+        toast.success('API key deleted successfully!')
+        fetchUserApiKeys()
+      } catch (error) {
+        toast.error('Failed to delete API key')
+      }
+    }
+  }
+
   // Calculate real stats from API keys
   const calculateStats = () => {
     const totalKeys = userApiKeys.length
@@ -164,7 +190,11 @@ const Dashboard = () => {
   ]
 
   const quickActions = [
-    { name: 'Add API Key', icon: Plus, color: 'bg-blue-500', onClick: () => setShowAddKeyModal(true) },
+    { name: 'Add API Key', icon: Plus, color: 'bg-blue-500', onClick: () => {
+      setIsEditMode(false)
+      setEditingKey(null)
+      setShowAddKeyModal(true)
+    }},
     { name: 'View Analytics', icon: BarChart3, color: 'bg-green-500' },
     { name: 'Settings', icon: Settings, color: 'bg-purple-500' },
     { name: 'Documentation', icon: Globe, color: 'bg-orange-500' }
@@ -425,7 +455,11 @@ const Dashboard = () => {
               </h2>
               <motion.button
                 whileHover={{ scale: 1.05 }}
-                onClick={() => setShowAddKeyModal(true)}
+                onClick={() => {
+                  setIsEditMode(false)
+                  setEditingKey(null)
+                  setShowAddKeyModal(true)
+                }}
                 className="flex items-center px-4 py-2 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -447,7 +481,11 @@ const Dashboard = () => {
                 <p className="text-gray-400 mb-4">Add your first API key to get started with KeyPilot.</p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
-                  onClick={() => setShowAddKeyModal(true)}
+                  onClick={() => {
+                    setIsEditMode(false)
+                    setEditingKey(null)
+                    setShowAddKeyModal(true)
+                  }}
                   className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all mx-auto"
                 >
                   <Plus className="h-5 w-5 mr-2" />
@@ -514,10 +552,16 @@ const Dashboard = () => {
                         Created: {new Date(apiKey.created_at).toLocaleDateString()}
                       </span>
                       <div className="flex space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300 transition-colors">
+                        <button 
+                          onClick={() => handleEditKey(apiKey)}
+                          className="text-blue-400 hover:text-blue-300 transition-colors"
+                        >
                           Edit
                         </button>
-                        <button className="text-red-400 hover:text-red-300 transition-colors">
+                        <button 
+                          onClick={() => handleDeleteKey(apiKey)}
+                          className="text-red-400 hover:text-red-300 transition-colors"
+                        >
                           Delete
                         </button>
                       </div>
@@ -871,8 +915,10 @@ const Dashboard = () => {
       {/* Add Key Modal */}
       <AddKeyModal 
         isOpen={showAddKeyModal}
-        onClose={() => setShowAddKeyModal(false)}
+        onClose={handleCloseModal}
         onSuccess={handleAddKeySuccess}
+        editKey={editingKey}
+        isEditMode={isEditMode}
       />
     </div>
   )

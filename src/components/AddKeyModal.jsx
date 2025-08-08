@@ -13,7 +13,7 @@ import {
 import { apiKeysAPI } from '../services/api'
 import toast from 'react-hot-toast'
 
-const AddKeyModal = ({ isOpen, onClose, onSuccess }) => {
+const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = false }) => {
   const [formData, setFormData] = useState({
     api_key: '',
     description: '',
@@ -39,6 +39,38 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess }) => {
       fetchTemplates()
     }
   }, [isOpen])
+
+  // Populate form when in edit mode
+  useEffect(() => {
+    if (isEditMode && editKey) {
+      setFormData({
+        api_key: editKey.token || '',
+        description: editKey.description || '',
+        template: editKey.template || '',
+        max_requests_per_day: editKey.limits?.max_requests_per_day || 1000,
+        max_requests_per_week: editKey.limits?.max_requests_per_week || 5000,
+        max_tokens_per_day: editKey.limits?.max_tokens_per_day || 100000,
+        max_payload_kb: editKey.limits?.max_payload_kb || 1000,
+        expiry_date: editKey.expiry_date ? new Date(editKey.expiry_date).toISOString().split('T')[0] : '',
+        allowed_origins: editKey.allowed_origins || [''],
+        scopes: editKey.scopes || ['']
+      })
+    } else {
+      // Reset form for add mode
+      setFormData({
+        api_key: '',
+        description: '',
+        template: '',
+        max_requests_per_day: 1000,
+        max_requests_per_week: 5000,
+        max_tokens_per_day: 100000,
+        max_payload_kb: 1000,
+        expiry_date: '',
+        allowed_origins: [''],
+        scopes: ['']
+      })
+    }
+  }, [isEditMode, editKey, isOpen])
 
   const fetchTemplates = async () => {
     setIsLoadingTemplates(true)
@@ -155,29 +187,41 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess }) => {
         expiry_date: formData.expiry_date ? new Date(formData.expiry_date).toISOString() : null
       }
 
-      const response = await apiKeysAPI.addKey(cleanedFormData)
+      let response
+      if (isEditMode) {
+        response = await apiKeysAPI.updateKey(cleanedFormData)
+        if (response.success) {
+          toast.success('🎉 API key updated successfully!')
+        }
+      } else {
+        response = await apiKeysAPI.addKey(cleanedFormData)
+        if (response.success) {
+          toast.success('🎉 API key added successfully!')
+        }
+      }
       
       if (response.success) {
-        toast.success('🎉 API key added successfully!')
         onSuccess()
         onClose()
-        // Reset form
-        setFormData({
-          api_key: '',
-          description: '',
-          template: '',
-          max_requests_per_day: 1000,
-          max_requests_per_week: 5000,
-          max_tokens_per_day: 100000,
-          max_payload_kb: 1000,
-          expiry_date: '',
-          allowed_origins: [''],
-          scopes: ['']
-        })
-        setSelectedTemplate(null)
+        // Reset form for add mode
+        if (!isEditMode) {
+          setFormData({
+            api_key: '',
+            description: '',
+            template: '',
+            max_requests_per_day: 1000,
+            max_requests_per_week: 5000,
+            max_tokens_per_day: 100000,
+            max_payload_kb: 1000,
+            expiry_date: '',
+            allowed_origins: [''],
+            scopes: ['']
+          })
+          setSelectedTemplate(null)
+        }
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Failed to add API key'
+      const errorMessage = error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'add'} API key`
       toast.error(errorMessage)
       
       // Handle semantic conflict
@@ -217,7 +261,9 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess }) => {
                   <Key className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white">Add New API Key</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    {isEditMode ? 'Edit API Key' : 'Add New API Key'}
+                  </h2>
                   <p className="text-gray-400 text-sm">Configure your API key with custom limits and settings</p>
                 </div>
               </div>
@@ -533,12 +579,12 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess }) => {
                   {isLoading ? (
                     <>
                       <Loader className="h-4 w-4 mr-2 animate-spin" />
-                      Adding Key...
+                      {isEditMode ? 'Updating Key...' : 'Adding Key...'}
                     </>
                   ) : (
                     <>
                       <Key className="h-4 w-4 mr-2" />
-                      Add API Key
+                      {isEditMode ? 'Update API Key' : 'Add API Key'}
                     </>
                   )}
                 </button>
