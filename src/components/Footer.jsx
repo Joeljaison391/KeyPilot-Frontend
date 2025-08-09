@@ -6,14 +6,12 @@ import toast from 'react-hot-toast'
 const Footer = () => {
   const navigate = useNavigate()
 
-  // Newsletter removed
 
   const handleTryDemo = () => {
     toast.success('🚀 Redirecting to demo login...')
     navigate('/login')
   }
 
-  // Removed large link lists to simplify the footer UI
 
   return (
     <footer className="relative bg-gray-900 border-t border-gray-800">
@@ -103,45 +101,7 @@ const Footer = () => {
               </div>
             </motion.div>
           </div>
-
-          {/* Links grid and newsletter removed */}
         </div>
-
-        {/* Tech Stack */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="pt-8 border-t border-gray-800"
-        >
-          <div className="mt-2">
-            <div className="text-center">
-              <p className="text-gray-500 text-sm mb-4">Powered by</p>
-              <div className="flex flex-wrap justify-center items-center gap-6 text-gray-400 text-sm">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-                  Redis
-                </span>
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                  React
-                </span>
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  Node.js
-                </span>
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                  Tailwind CSS
-                </span>
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                  Vector Search
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </footer>
   )
