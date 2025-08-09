@@ -1,47 +1,19 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Key, Github, Twitter, Globe, Mail, Heart } from 'lucide-react'
+import { Key, Github, Twitter, Globe, Heart } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Footer = () => {
   const navigate = useNavigate()
 
-  const handleNewsletterSignup = (e) => {
-    e.preventDefault()
-    toast.success('🎉 Thanks for subscribing!')
-  }
+  // Newsletter removed
 
   const handleTryDemo = () => {
     toast.success('🚀 Redirecting to demo login...')
     navigate('/login')
   }
 
-  const links = {
-    product: [
-      { name: 'Features', href: '#features' },
-      { name: 'Pricing', href: '#pricing' },
-      { name: 'Security', href: '#security' },
-      { name: 'API Docs', href: '#docs' },
-    ],
-    company: [
-      { name: 'About', href: '#about' },
-      { name: 'Blog', href: '#blog' },
-      { name: 'Careers', href: '#careers' },
-      { name: 'Contact', href: '#contact' },
-    ],
-    resources: [
-      { name: 'Documentation', href: '#docs' },
-      { name: 'Tutorials', href: '#tutorials' },
-      { name: 'Community', href: '#community' },
-      { name: 'Support', href: '#support' },
-    ],
-    legal: [
-      { name: 'Privacy', href: '#privacy' },
-      { name: 'Terms', href: '#terms' },
-      { name: 'Security', href: '#security' },
-      { name: 'Compliance', href: '#compliance' },
-    ]
-  }
+  // Removed large link lists to simplify the footer UI
 
   return (
     <footer className="relative bg-gray-900 border-t border-gray-800">
@@ -50,9 +22,9 @@ const Footer = () => {
       
       <div className="relative z-10 container mx-auto px-6 py-16">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12">
+        <div className="grid grid-cols-1 gap-12 mb-12">
           {/* Brand Section */}
-          <div className="lg:col-span-4">
+          <div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -109,96 +81,40 @@ const Footer = () => {
                   <Globe className="h-5 w-5" />
                 </motion.a>
               </div>
+
+              {/* Combined bottom row (copyright + CTA) */}
+              <div className="mt-8 pt-6 border-t border-gray-800">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center text-gray-400 text-sm">
+                    <span>© 2024 KeyPilot. Made with</span>
+                    <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
+                    <span>for the Redis Hackathon</span>
+                  </div>
+                  <motion.button
+                    onClick={handleTryDemo}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                  >
+                    Try Demo Now
+                    <Key className="h-4 w-4 ml-2" />
+                  </motion.button>
+                </div>
+              </div>
             </motion.div>
           </div>
 
-          {/* Links Sections */}
-          <div className="lg:col-span-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {Object.entries(links).map(([category, items], index) => (
-                <motion.div
-                  key={category}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
-                >
-                  <h3 className="text-white font-semibold mb-4 capitalize">
-                    {category}
-                  </h3>
-                  <ul className="space-y-3">
-                    {items.map((link) => (
-                      <li key={link.name}>
-                        <a
-                          href={link.href}
-                          className="text-gray-400 hover:text-white transition-colors duration-200 text-sm"
-                        >
-                          {link.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Newsletter Section */}
-          <div className="lg:col-span-2">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              <h3 className="text-white font-semibold mb-4">Stay Updated</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Get the latest updates on new features and Redis integrations.
-              </p>
-              
-              <form onSubmit={handleNewsletterSignup} className="space-y-3">
-                <input
-                  placeholder="Enter your email"
-                  required
-                />
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
-                >
-                  Subscribe
-                </motion.button>
-              </form>
-            </motion.div>
-          </div>
+          {/* Links grid and newsletter removed */}
         </div>
 
-        {/* Bottom Section */}
+        {/* Tech Stack */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
           className="pt-8 border-t border-gray-800"
-              // Removed Pricing, API Docs, and About links
         >
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center text-gray-400 text-sm mb-4 md:mb-0">
-              <span>© 2024 KeyPilot. Made with</span>
-              <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
-              <span>for the Redis Hackathon</span>
-            </div>
-
-            <motion.button
-              onClick={handleTryDemo}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
-            >
-              Try Demo Now
-              <Key className="h-4 w-4 ml-2" />
-            </motion.button>
-          </div>
-
-          {/* Tech Stack */}
-          <div className="mt-8 pt-8 border-t border-gray-800">
+          <div className="mt-2">
             <div className="text-center">
               <p className="text-gray-500 text-sm mb-4">Powered by</p>
               <div className="flex flex-wrap justify-center items-center gap-6 text-gray-400 text-sm">
