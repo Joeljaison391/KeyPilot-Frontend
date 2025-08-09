@@ -224,7 +224,7 @@ function IntentTrends() {
       {/* cURL Command */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
         <h3 className="text-lg font-semibold text-white mb-4">API Request</h3>
-        <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto">
+        <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto thin-scrollbar">
           {generateCurl()}
         </pre>
       </div>
@@ -465,7 +465,7 @@ function IntentTrends() {
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
               <h3 className="text-lg font-semibold text-white mb-4">Cluster Analysis Details</h3>
               
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto thin-scrollbar">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-600">
@@ -577,7 +577,7 @@ function IntentTrends() {
           className="bg-red-500/10 border border-red-500/20 rounded-xl p-6"
         >
           <h3 className="text-lg font-semibold text-red-400 mb-4">Error Loading Intent Trends</h3>
-          <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto">
+          <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto thin-scrollbar">
             {JSON.stringify(trendsData.error, null, 2)}
           </pre>
         </motion.div>
@@ -587,7 +587,7 @@ function IntentTrends() {
       {trendsData && !trendsData.error && (
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
           <h3 className="text-lg font-semibold text-white mb-4">Raw Intent Trends Data</h3>
-          <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
+          <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96 custom-scrollbar">
             {JSON.stringify(trendsData, null, 2)}
           </pre>
         </div>

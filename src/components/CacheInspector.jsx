@@ -210,7 +210,7 @@ function CacheInspector() {
       {/* cURL Command */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
         <h3 className="text-lg font-semibold text-white mb-4">cURL Command</h3>
-        <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto">
+        <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto thin-scrollbar">
           {generateCurl()}
         </pre>
       </div>
@@ -254,7 +254,7 @@ function CacheInspector() {
                 <div>
                   <h4 className="text-white font-medium mb-3">Cache Value</h4>
                   <div className="bg-gray-700/20 rounded-lg p-4">
-                    <pre className="text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto">
+                    <pre className="text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto thin-scrollbar">
                       {typeof data.data.data.value === 'object' 
                         ? JSON.stringify(data.data.data.value, null, 2)
                         : data.data.data.value
@@ -317,7 +317,7 @@ function CacheInspector() {
               {data.data.data.keys && (
                 <div>
                   <h4 className="text-white font-medium mb-3">Available Cache Keys</h4>
-                  <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
+                  <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto custom-scrollbar">
                     {data.data.data.keys.map((key, index) => (
                       <motion.div
                         key={index}
@@ -342,7 +342,7 @@ function CacheInspector() {
           {/* Raw Response Data */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
             <h3 className="text-lg font-semibold text-white mb-4">Raw Response</h3>
-            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
+            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96 custom-scrollbar">
               {JSON.stringify(data.data, null, 2)}
             </pre>
           </div>

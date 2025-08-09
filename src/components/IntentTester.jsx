@@ -213,7 +213,7 @@ function IntentTester() {
       {/* cURL Command */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
         <h3 className="text-lg font-semibold text-white mb-4">cURL Command</h3>
-        <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto">
+        <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto thin-scrollbar">
           {generateCurl()}
         </pre>
       </div>
@@ -290,7 +290,7 @@ function IntentTester() {
           {/* Raw Response Data */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
             <h3 className="text-lg font-semibold text-white mb-4">Raw Response</h3>
-            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
+            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96 custom-scrollbar">
               {JSON.stringify(results.data, null, 2)}
             </pre>
           </div>

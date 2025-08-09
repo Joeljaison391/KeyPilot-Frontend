@@ -106,7 +106,7 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-gray-800/80 backdrop-blur-lg border border-gray-700 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-auto"
+        className="bg-gray-800/80 backdrop-blur-lg border border-gray-700 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-auto custom-scrollbar"
       >
         {/* Header */}
         <div className="p-8 border-b border-gray-700 relative">
@@ -222,52 +222,7 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
                 </div>
               </div>
 
-              {/* Quick Start */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gray-700/30 rounded-xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">🚀 Quick Start</h3>
-                  <ol className="space-y-2 text-gray-300">
-                    <li className="flex items-center space-x-2">
-                      <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">1</span>
-                      <span>Choose a demo user to login</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">2</span>
-                      <span>Add API keys using demo keys</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">3</span>
-                      <span>Explore the dashboard and features</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">4</span>
-                      <span>Test API calls in the playground</span>
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="bg-gray-700/30 rounded-xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">⚠️ Important Notes</h3>
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Demo data resets periodically</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">All API keys are for demo purposes only</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">No real API calls are made to external services</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Feel free to experiment with all features</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              {/* Quick Start and Important Notes removed */}
             </motion.div>
           )}
 
@@ -304,7 +259,7 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
                     
                     <div>
                       <h4 className="text-lg font-medium text-white mb-2">Example Code/Config:</h4>
-                      <pre className="bg-gray-900 rounded-lg p-4 text-green-400 text-sm overflow-x-auto">
+                      <pre className="bg-gray-900 rounded-lg p-4 text-green-400 text-sm overflow-x-auto thin-scrollbar">
                         <code>{step.code.trim()}</code>
                       </pre>
                     </div>
@@ -312,17 +267,7 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
                 </div>
               ))}
 
-              {/* Additional Tips */}
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
-                <h3 className="text-xl font-semibold text-blue-300 mb-4">💡 Pro Tips</h3>
-                <ul className="space-y-2 text-blue-200">
-                  <li>• Use the "Use Demo Key" button to quickly populate API key fields</li>
-                  <li>• Check the Cache Inspector to see how caching improves performance</li>
-                  <li>• Try different templates to see how they affect API routing</li>
-                  <li>• Monitor the real-time stats dashboard during testing</li>
-                  <li>• Experiment with rate limiting and security features</li>
-                </ul>
-              </div>
+              {/* Pro Tips section removed */}
             </motion.div>
           )}
 
@@ -369,7 +314,7 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
                   </a>
                   
                   <a
-                    href="#"
+                    href="https://github.com/Joeljaison391/KeyPilot-Frontend"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors"

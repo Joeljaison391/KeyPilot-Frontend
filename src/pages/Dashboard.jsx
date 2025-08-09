@@ -768,7 +768,7 @@ const Dashboard = () => {
               </span>
             </div>
             
-            <div className="space-y-3 max-h-80 overflow-y-auto">
+            <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
               {[
                 { 
                   action: 'Proxy request processed', 

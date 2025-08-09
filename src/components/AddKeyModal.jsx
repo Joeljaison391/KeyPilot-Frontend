@@ -347,7 +347,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
             animate="visible"
             exit="exit"
             transition={{ duration: 0.2 }}
-            className="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-auto"
+            className="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-auto custom-scrollbar"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -389,7 +389,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                         <span className="ml-2 text-gray-400">Loading templates...</span>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto">
+                      <div className="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto thin-scrollbar">
                         {templates.map((template) => (
                           <div
                             key={template.id}
