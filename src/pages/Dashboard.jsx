@@ -348,14 +348,6 @@ const Dashboard = () => {
           </p>
           
           <div className="mt-4 flex items-center space-x-4">
-            <div className="inline-flex items-center px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full text-green-300">
-              <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-              All Systems Operational
-            </div>
-            <div className="inline-flex items-center px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-300">
-              <Database className="h-4 w-4 mr-2" />
-              Redis Connected
-            </div>
           </div>
         </motion.div>
 
