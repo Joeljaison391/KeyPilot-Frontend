@@ -1,17 +1,15 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Play, ArrowRight, Shield, Zap, Database } from 'lucide-react'
-import { useConsent } from '../context/ConsentContext'
 import toast from 'react-hot-toast'
 
 const Hero = () => {
   const navigate = useNavigate()
-  const { showWelcomeScreen } = useConsent()
 
   const handleTryDemo = () => {
     // console.log('Try Demo button clicked - updated!') // Debug log
     toast.success('🚀 Opening demo guide...')
-    showWelcomeScreen()
+    navigate('/welcome')
   }
 
   // Quick Login removed; users must use Try Demo

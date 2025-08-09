@@ -1,10 +1,9 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
-import { ConsentProvider, useConsent } from './context/ConsentContext'
+import { ConsentProvider } from './context/ConsentContext'
 import { TourProvider } from './context/TourContext'
-import WelcomeScreen from './components/WelcomeScreen'
+import WelcomePage from './pages/WelcomePage'
 import ConsentProtectedRoute from './components/ConsentProtectedRoute'
 import LandingPage from './components/LandingPage'
 import LoginPage from './pages/LoginPage'
@@ -15,28 +14,6 @@ import './App.css'
 
 // Inner App component that has access to consent context
 function AppContent() {
-  const { showWelcome, hideWelcomeScreen } = useConsent()
-
-  const handleWelcomeProceed = () => {
-    // Redirect to demo login after consent
-    window.location.href = '/login?demo=true'
-  }
-
-  const handleWelcomeClose = () => {
-    // Redirect to homepage
-    window.location.href = '/'
-  }
-
-  // Show welcome screen if it's active
-  if (showWelcome) {
-    return (
-      <WelcomeScreen 
-        onProceed={handleWelcomeProceed}
-        onClose={handleWelcomeClose}
-      />
-    )
-  }
-
   return (
     <AuthProvider>
       <Router>
@@ -44,6 +21,7 @@ function AppContent() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
             <Route 
               path="/login" 
               element={

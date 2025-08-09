@@ -8,7 +8,7 @@ import { useConsent } from '../context/ConsentContext'
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navigate = useNavigate()
-  const { showWelcomeScreen, canAccessLogin } = useConsent()
+  const { canAccessLogin } = useConsent()
 
   const handleTryDemo = () => {
     // Always show welcome screen for demo flow unless consent already given
@@ -16,7 +16,7 @@ const Header = () => {
       toast.success('Redirecting to demo login... 🚀')
       navigate('/login')
     } else {
-      showWelcomeScreen()
+      navigate('/welcome')
     }
   }
 
@@ -26,7 +26,7 @@ const Header = () => {
       toast.success('Redirecting to login... 🔐')
       navigate('/login')
     } else {
-      showWelcomeScreen()
+      navigate('/welcome')
     }
   }
 
