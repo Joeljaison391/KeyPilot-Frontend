@@ -26,7 +26,7 @@ import Header from './Header'
 import Hero from './Hero'
 import Features from './Features'
 import Stats from './Stats'
-import UseCases from './UseCases'
+// UseCases removed from landing page
 import Footer from './Footer'
 
 const LandingPage = () => {
@@ -50,7 +50,7 @@ const LandingPage = () => {
       <Hero />
       <Features />
       <Stats />
-      <UseCases />
+      {/* UseCases removed */}
       <Footer />
     </div>
   )

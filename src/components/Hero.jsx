@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Play, ArrowRight, Shield, Zap, Database } from 'lucide-react'
@@ -15,10 +14,7 @@ const Hero = () => {
     showWelcomeScreen()
   }
 
-  const handleGetStarted = () => {
-    toast.success('🎯 Redirecting to login...')
-    navigate('/login')
-  }
+  // Quick Login removed; users must use Try Demo
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -103,7 +99,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex justify-center"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -114,16 +110,6 @@ const Hero = () => {
               <Play className="h-5 w-5 mr-2 group-hover:animate-pulse" />
               Try Demo
               <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleGetStarted}
-              className="flex items-center px-8 py-4 border-2 border-gray-600 text-white rounded-xl font-semibold text-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-300"
-            >
-              Quick Login
-              <ArrowRight className="h-5 w-5 ml-2" />
             </motion.button>
           </motion.div>
 

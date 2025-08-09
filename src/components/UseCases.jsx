@@ -156,39 +156,7 @@ const UseCases = () => {
           ))}
         </div>
 
-        {/* Integration Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="mt-20 text-center"
-        >
-          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-8">
-            <div className="flex items-center justify-center mb-6">
-              <Zap className="h-8 w-8 text-yellow-400 mr-3" />
-              <h3 className="text-2xl font-bold text-white">Quick Integration</h3>
-            </div>
-            
-            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-              Get started in minutes with our simple REST API and comprehensive SDKs for popular languages.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                <h4 className="text-white font-semibold mb-2">REST API</h4>
-                <p className="text-gray-400 text-sm">Simple HTTP endpoints</p>
-              </div>
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                <h4 className="text-white font-semibold mb-2">SDK Support</h4>
-                <p className="text-gray-400 text-sm">Python, Node.js, Go, Rust</p>
-              </div>
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                <h4 className="text-white font-semibold mb-2">Documentation</h4>
-                <p className="text-gray-400 text-sm">Comprehensive guides</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Quick Integration card removed as requested */}
       </div>
     </section>
   )
