@@ -617,6 +617,100 @@ const Dashboard = () => {
             animate={{ opacity: 1, x: 0 }}
             className="space-y-6"
           >
+            {/* Recent API Activity */}
+            <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-white flex items-center">
+                  <Activity className="h-5 w-5 mr-2 text-purple-400" />
+                  Recent API Activity
+                </h3>
+                <span className="text-green-400 text-sm flex items-center">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                  Live
+                </span>
+              </div>
+              
+              <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                {[
+                  { 
+                    action: 'Proxy request processed', 
+                    details: 'text-gpt-completion → OpenAI GPT-3.5',
+                    time: '2 seconds ago', 
+                    status: 'success',
+                    metrics: { latency: '245ms', tokens: '127', cached: true }
+                  },
+                  { 
+                    action: 'Intent analysis completed', 
+                    details: 'generate creative story → 89% confidence match',
+                    time: '15 seconds ago', 
+                    status: 'success',
+                    metrics: { latency: '89ms', confidence: '89%', cached: false }
+                  },
+                  { 
+                    action: 'New API key added', 
+                    details: 'image-gen-dalle template configured',
+                    time: '2 minutes ago', 
+                    status: 'success',
+                    metrics: { scope: 'image-generation', limits: '1000/day' }
+                  },
+                  { 
+                    action: 'Cache cluster analyzed', 
+                    details: '15 intent patterns identified',
+                    time: '5 minutes ago', 
+                    status: 'info',
+                    metrics: { clusters: '15', efficiency: '87%', recommendations: '3' }
+                  },
+                  { 
+                    action: 'Rate limit threshold reached', 
+                    details: 'text-completion: 78% of daily limit used',
+                    time: '12 minutes ago', 
+                    status: 'warning',
+                    metrics: { usage: '780/1000', remaining: '220' }
+                  },
+                  { 
+                    action: 'Template matching optimized', 
+                    details: 'Vector similarity threshold updated',
+                    time: '23 minutes ago', 
+                    status: 'success',
+                    metrics: { threshold: '0.85', improvement: '+5%' }
+                  }
+                ].map((activity, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center">
+                        <div className={`w-2 h-2 rounded-full mr-3 mt-2 ${
+                          activity.status === 'success' ? 'bg-green-400' :
+                          activity.status === 'warning' ? 'bg-yellow-400' : 'bg-blue-400'
+                        }`}></div>
+                        <div>
+                          <span className="text-white font-medium">{activity.action}</span>
+                          <p className="text-gray-400 text-sm mt-1">{activity.details}</p>
+                        </div>
+                      </div>
+                      <span className="text-gray-500 text-xs">{activity.time}</span>
+                    </div>
+                    
+                    {/* Metrics */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {Object.entries(activity.metrics).map(([key, value]) => (
+                        <span 
+                          key={key}
+                          className="px-2 py-1 bg-gray-800/50 text-gray-300 text-xs rounded border border-gray-600/30"
+                        >
+                          {key}: {value}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
             {/* API Usage Analytics */}
             <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
@@ -748,111 +842,7 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        {/* Recent Activity & Real-time Logs */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          
-          {/* Recent API Activity */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white flex items-center">
-                <Activity className="h-5 w-5 mr-2 text-purple-400" />
-                Recent API Activity
-              </h3>
-              <span className="text-green-400 text-sm flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                Live
-              </span>
-            </div>
-            
-            <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
-              {[
-                { 
-                  action: 'Proxy request processed', 
-                  details: 'text-gpt-completion → OpenAI GPT-3.5',
-                  time: '2 seconds ago', 
-                  status: 'success',
-                  metrics: { latency: '245ms', tokens: '127', cached: true }
-                },
-                { 
-                  action: 'Intent analysis completed', 
-                  details: 'generate creative story → 89% confidence match',
-                  time: '15 seconds ago', 
-                  status: 'success',
-                  metrics: { latency: '89ms', confidence: '89%', cached: false }
-                },
-                { 
-                  action: 'New API key added', 
-                  details: 'image-gen-dalle template configured',
-                  time: '2 minutes ago', 
-                  status: 'success',
-                  metrics: { scope: 'image-generation', limits: '1000/day' }
-                },
-                { 
-                  action: 'Cache cluster analyzed', 
-                  details: '15 intent patterns identified',
-                  time: '5 minutes ago', 
-                  status: 'info',
-                  metrics: { clusters: '15', efficiency: '87%', recommendations: '3' }
-                },
-                { 
-                  action: 'Rate limit threshold reached', 
-                  details: 'text-completion: 78% of daily limit used',
-                  time: '12 minutes ago', 
-                  status: 'warning',
-                  metrics: { usage: '780/1000', remaining: '220' }
-                },
-                { 
-                  action: 'Template matching optimized', 
-                  details: 'Vector similarity threshold updated',
-                  time: '23 minutes ago', 
-                  status: 'success',
-                  metrics: { threshold: '0.85', improvement: '+5%' }
-                }
-              ].map((activity, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center">
-                      <div className={`w-2 h-2 rounded-full mr-3 mt-2 ${
-                        activity.status === 'success' ? 'bg-green-400' :
-                        activity.status === 'warning' ? 'bg-yellow-400' : 'bg-blue-400'
-                      }`}></div>
-                      <div>
-                        <span className="text-white font-medium">{activity.action}</span>
-                        <p className="text-gray-400 text-sm mt-1">{activity.details}</p>
-                      </div>
-                    </div>
-                    <span className="text-gray-500 text-xs">{activity.time}</span>
-                  </div>
-                  
-                  {/* Metrics */}
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {Object.entries(activity.metrics).map(([key, value]) => (
-                      <span 
-                        key={key}
-                        className="px-2 py-1 bg-gray-800/50 text-gray-300 text-xs rounded border border-gray-600/30"
-                      >
-                        {key}: {value}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
 
-
-        </div>
       </main>
 
       {/* Add Key Modal */}
