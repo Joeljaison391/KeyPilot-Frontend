@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useTour } from '../context/TourContext'
 import { useNavigate } from 'react-router-dom'
 import { 
   Key, 
@@ -28,10 +29,12 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import AddKeyModal from '../components/AddKeyModal'
+import TourOverlay from '../components/TourOverlay'
 import { apiKeysAPI } from '../services/api'
 
 const Dashboard = () => {
   const { user, token, logout, userProfile, fetchUserProfile, isAuthenticated } = useAuth()
+  const { checkFirstLogin } = useTour()
   const navigate = useNavigate()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -55,10 +58,36 @@ const Dashboard = () => {
     }
     
     if (user?.userId) {
-      fetchUserProfile(user.userId)
-      fetchUserApiKeys()
+      // Only fetch data if not already loading to prevent multiple calls
+      if (!isLoadingKeys) {
+        fetchUserProfile(user.userId)
+        fetchUserApiKeys()
+      }
     }
   }, [isAuthenticated, user, navigate, fetchUserProfile])
+
+  // Separate effect for tour - only start after initial loading and token is available
+  useEffect(() => {
+    // Add more conditions to ensure everything is properly loaded
+    if (isAuthenticated && 
+        user?.userId && 
+        token && 
+        !isLoadingKeys && 
+        userProfile && 
+        !isRefreshing) {
+      
+      // Ensure all DOM elements are rendered before starting tour
+      const tourTimer = setTimeout(() => {
+        console.log('Dashboard: Checking first login for tour')
+        // Double-check that user is still authenticated before starting tour
+        if (isAuthenticated && token) {
+          checkFirstLogin()
+        }
+      }, 3000) // Increased to 3 seconds to ensure everything is stable
+      
+      return () => clearTimeout(tourTimer)
+    }
+  }, [isAuthenticated, user, token, isLoadingKeys, userProfile, isRefreshing, checkFirstLogin])
 
   const fetchUserApiKeys = async () => {
     setIsLoadingKeys(true)
@@ -255,6 +284,7 @@ const Dashboard = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 onClick={() => navigate('/playground')}
+                data-tour="playground-button"
                 className="p-2 text-gray-400 hover:text-blue-400 transition-colors relative"
                 title="API Playground"
               >
@@ -263,7 +293,10 @@ const Dashboard = () => {
 
               {/* API Token Display */}
               {token && (
-                <div className="flex items-center space-x-2 px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg">
+                <div 
+                  data-tour="user-token"
+                  className="flex items-center space-x-2 px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg"
+                >
                   <Key className="h-4 w-4 text-blue-400" />
                   <div className="flex items-center space-x-2">
                     <span className="text-xs text-gray-400">API Token:</span>
@@ -339,7 +372,10 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div 
+          data-tour="stats-overview"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+        >
           {dashboardStats.map((stat, index) => (
             <motion.div
               key={stat.title}
@@ -446,6 +482,7 @@ const Dashboard = () => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            data-tour="api-keys-section"
             className="lg:col-span-2 bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6"
           >
             <div className="flex items-center justify-between mb-6">
@@ -460,6 +497,7 @@ const Dashboard = () => {
                   setEditingKey(null)
                   setShowAddKeyModal(true)
                 }}
+                data-tour="add-key-button"
                 className="flex items-center px-4 py-2 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -920,6 +958,9 @@ const Dashboard = () => {
         editKey={editingKey}
         isEditMode={isEditMode}
       />
+
+      {/* Tour Overlay */}
+      <TourOverlay />
     </div>
   )
 }

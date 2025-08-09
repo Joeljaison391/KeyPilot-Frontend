@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Loader
 } from 'lucide-react'
-import { apiKeysAPI } from '../services/api'
+import { apiKeysAPI, authAPI } from '../services/api'
 import toast from 'react-hot-toast'
 
 const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = false }) => {
@@ -32,6 +32,8 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false)
   const [errors, setErrors] = useState({})
+  const [showTemplateWarning, setShowTemplateWarning] = useState(false)
+  const [pendingTemplate, setPendingTemplate] = useState(null)
 
   // Fetch templates on mount
   useEffect(() => {
@@ -86,6 +88,25 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
     }
   }
 
+  const handleDemoApiKeyFill = async () => {
+    try {
+      const response = await authAPI.getDemoApiKey()
+      if (response.success && response.apiKey) {
+        setFormData(prev => ({
+          ...prev,
+          api_key: response.apiKey
+        }))
+        toast.success('Demo API key filled!')
+      } else {
+        toast.error(response.message || 'Failed to get demo API key')
+      }
+    } catch (error) {
+      console.error('Demo API key error:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch demo API key'
+      toast.error(errorMessage)
+    }
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -102,6 +123,19 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
   }
 
   const handleTemplateSelect = (template) => {
+    // Check if the selected template is Google Gemini
+    const isGeminiTemplate = template.name?.toLowerCase().includes('gemini') || 
+                            template.provider?.toLowerCase().includes('google') ||
+                            template.description?.toLowerCase().includes('gemini')
+    
+    if (!isGeminiTemplate) {
+      // Show warning for non-Gemini templates
+      setPendingTemplate(template)
+      setShowTemplateWarning(true)
+      return
+    }
+    
+    // Allow Gemini template selection
     setSelectedTemplate(template)
     setFormData(prev => ({
       ...prev,
@@ -109,6 +143,26 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
       description: template.description,
       scopes: template.scopes
     }))
+  }
+
+  const handleWarningClose = () => {
+    setShowTemplateWarning(false)
+    setPendingTemplate(null)
+  }
+
+  const handleForceSelect = () => {
+    // Allow user to proceed with non-Gemini template if they insist
+    if (pendingTemplate) {
+      setSelectedTemplate(pendingTemplate)
+      setFormData(prev => ({
+        ...prev,
+        template: pendingTemplate.id,
+        description: pendingTemplate.description,
+        scopes: pendingTemplate.scopes
+      }))
+    }
+    setShowTemplateWarning(false)
+    setPendingTemplate(null)
   }
 
   const handleArrayChange = (field, index, value) => {
@@ -338,10 +392,21 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
 
                   {/* API Key */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      <Key className="inline h-4 w-4 mr-2" />
-                      API Key *
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-300">
+                        <Key className="inline h-4 w-4 mr-2" />
+                        API Key *
+                      </label>
+                      {!isEditMode && (
+                        <button
+                          type="button"
+                          onClick={handleDemoApiKeyFill}
+                          className="text-xs px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors"
+                        >
+                          Use Demo Key
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="text"
                       name="api_key"
@@ -354,6 +419,12 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                           : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500'
                       }`}
                     />
+                    {formData.api_key.startsWith('sk-demo') && (
+                      <p className="mt-2 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 flex items-center">
+                        <AlertCircle className="h-3 w-3 mr-1 flex-shrink-0" />
+                        This is a demo API key just for demo, please do not use it outside the platform
+                      </p>
+                    )}
                     {errors.api_key && (
                       <p className="mt-1 text-sm text-red-400 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
@@ -592,6 +663,60 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
             </form>
           </motion.div>
         </div>
+      )}
+
+      {/* Template Warning Modal */}
+      {showTemplateWarning && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[60]"
+          onClick={handleWarningClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-md p-6"
+          >
+            <div className="flex items-center mb-4">
+              <div className="p-2 bg-yellow-500/20 rounded-lg mr-3">
+                <AlertCircle className="h-6 w-6 text-yellow-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">
+                Template Not Available in Demo
+              </h3>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-gray-300 mb-3">
+                Sorry, this is a demo app and we have implemented the core functionality for the 
+                <span className="font-medium text-blue-400"> Google Gemini Chat Completion</span> template only.
+              </p>
+              <p className="text-gray-400 text-sm">
+                Other API templates require expensive API access which we cannot afford to include in the demo app. 
+                Please try with the <span className="font-medium text-blue-400">Google Gemini Chat Completion</span> template instead.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end space-x-3">
+              <button
+                onClick={handleWarningClose}
+                className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForceSelect}
+                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Continue Anyway
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
       )}
     </AnimatePresence>
   )

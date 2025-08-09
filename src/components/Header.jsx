@@ -3,19 +3,31 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Key, Menu, X, Github } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useConsent } from '../context/ConsentContext'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const { showWelcomeScreen, canAccessLogin } = useConsent()
 
   const handleTryDemo = () => {
-    toast.success('Redirecting to demo login... 🚀')
-    navigate('/login')
+    // Always show welcome screen for demo flow unless consent already given
+    if (canAccessLogin(true)) {
+      toast.success('Redirecting to demo login... 🚀')
+      navigate('/login')
+    } else {
+      showWelcomeScreen()
+    }
   }
 
   const handleLogin = () => {
-    toast.success('Redirecting to login... 🔐')
-    navigate('/login')
+    // For login from navbar, also require consent (same as demo flow)
+    if (canAccessLogin(true)) {
+      toast.success('Redirecting to login... 🔐')
+      navigate('/login')
+    } else {
+      showWelcomeScreen()
+    }
   }
 
   return (
@@ -58,22 +70,6 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleTryDemo}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Try Demo
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleLogin}
-              className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-800 hover:text-white transition-all duration-200"
-            >
-              Login
-            </motion.button>
             <motion.a
               href="https://github.com"
               target="_blank"
@@ -116,18 +112,14 @@ const Header = () => {
                 About
               </a>
               <div className="flex flex-col space-y-2 pt-4">
-                <button
-                  onClick={handleTryDemo}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium"
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors text-center"
                 >
-                  Try Demo
-                </button>
-                <button
-                  onClick={handleLogin}
-                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg font-medium"
-                >
-                  Login
-                </button>
+                  GitHub
+                </a>
               </div>
             </nav>
           </motion.div>

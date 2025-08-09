@@ -239,6 +239,8 @@ export const AuthProvider = ({ children }) => {
       // Clear localStorage
       localStorage.removeItem('keypilot_token')
       localStorage.removeItem('keypilot_user')
+      // Clean up tour state on logout
+      localStorage.removeItem('keypilot_tour_in_progress')
       
       dispatch({ type: ACTION_TYPES.LOGOUT })
       toast.success('👋 Logged out successfully')

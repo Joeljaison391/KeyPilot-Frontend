@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { 
   Key, 
@@ -23,6 +23,7 @@ import { api } from '../services/api'
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login, isLoading, demoUsers, error, clearError } = useAuth()
   
   const [formData, setFormData] = useState({
@@ -32,6 +33,9 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [selectedDemo, setSelectedDemo] = useState(null)
   const [backendStatus, setBackendStatus] = useState(null)
+  
+  // Check if this is a demo login flow
+  const isDemoFlow = new URLSearchParams(location.search).get('demo') === 'true'
   
   // Demo credentials mapping
   const demoCredentials = {
@@ -229,8 +233,27 @@ const LoginPage = () => {
               
               {/* Form Header */}
               <motion.div variants={itemVariants} className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Demo Login</h2>
-                <p className="text-gray-400">Choose a demo user or enter credentials</p>
+                {isDemoFlow && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="mb-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg"
+                  >
+                    <div className="flex items-center justify-center text-blue-300">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      <span className="text-sm font-medium">Demo Mode Active</span>
+                    </div>
+                    <p className="text-xs text-blue-200 mt-1">
+                      You'll see the demo guide after login
+                    </p>
+                  </motion.div>
+                )}
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {isDemoFlow ? 'Demo Login' : 'Login to KeyPilot'}
+                </h2>
+                <p className="text-gray-400">
+                  {isDemoFlow ? 'Choose a demo user or enter credentials' : 'Access your API management dashboard'}
+                </p>
               </motion.div>
 
               {/* Demo Users */}

@@ -50,7 +50,7 @@ function IntentTrends() {
       return
     }
 
-    if (!user?.id) {
+    if (!user?.userId) {
       toast.error('User ID not available')
       return
     }
@@ -59,15 +59,14 @@ function IntentTrends() {
     try {
       const queryParams = new URLSearchParams({
         days: params.days.toString(),
-        detailed: params.detailed.toString(),
-        token: token
+        detailed: params.detailed.toString()
       })
 
       if (params.models) {
         queryParams.append('models', params.models)
       }
 
-      const response = await fetch(`${BASE_URL}/api/analytics/costs/${user.id}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/api/analytics/costs/${user.userId}?${queryParams}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -138,15 +137,14 @@ function IntentTrends() {
   const generateCurl = () => {
     const queryParams = new URLSearchParams({
       days: params.days.toString(),
-      detailed: params.detailed.toString(),
-      token: token || 'YOUR_TOKEN'
+      detailed: params.detailed.toString()
     })
 
     if (params.models) {
       queryParams.append('models', params.models)
     }
 
-    return `curl -X GET "${BASE_URL}/api/analytics/costs/${user?.id || 'USER_ID'}?${queryParams}" \\
+    return `curl -X GET "${BASE_URL}/api/analytics/costs/${user?.userId || 'USER_ID'}?${queryParams}" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}"`
   }

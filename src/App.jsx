@@ -1,6 +1,11 @@
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
+import { ConsentProvider, useConsent } from './context/ConsentContext'
+import { TourProvider } from './context/TourContext'
+import WelcomeScreen from './components/WelcomeScreen'
+import ConsentProtectedRoute from './components/ConsentProtectedRoute'
 import LandingPage from './components/LandingPage'
 import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
@@ -8,7 +13,30 @@ import Playground from './pages/Playground'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
 
-function App() {
+// Inner App component that has access to consent context
+function AppContent() {
+  const { showWelcome, hideWelcomeScreen } = useConsent()
+
+  const handleWelcomeProceed = () => {
+    // Redirect to demo login after consent
+    window.location.href = '/login?demo=true'
+  }
+
+  const handleWelcomeClose = () => {
+    // Redirect to homepage
+    window.location.href = '/'
+  }
+
+  // Show welcome screen if it's active
+  if (showWelcome) {
+    return (
+      <WelcomeScreen 
+        onProceed={handleWelcomeProceed}
+        onClose={handleWelcomeClose}
+      />
+    )
+  }
+
   return (
     <AuthProvider>
       <Router>
@@ -16,7 +44,14 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route 
+              path="/login" 
+              element={
+                <ConsentProtectedRoute>
+                  <LoginPage />
+                </ConsentProtectedRoute>
+              } 
+            />
             
             {/* Protected Routes */}
             <Route 
@@ -67,6 +102,17 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+  )
+}
+
+// Main App component with providers
+function App() {
+  return (
+    <ConsentProvider>
+      <TourProvider>
+        <AppContent />
+      </TourProvider>
+    </ConsentProvider>
   )
 }
 

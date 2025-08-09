@@ -1,18 +1,22 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Play, ArrowRight, Shield, Zap, Database } from 'lucide-react'
+import { useConsent } from '../context/ConsentContext'
 import toast from 'react-hot-toast'
 
 const Hero = () => {
   const navigate = useNavigate()
+  const { showWelcomeScreen } = useConsent()
 
   const handleTryDemo = () => {
-    toast.success('🚀 Redirecting to demo login...')
-    navigate('/login')
+    console.log('Try Demo button clicked - updated!') // Debug log
+    toast.success('🚀 Opening demo guide...')
+    showWelcomeScreen()
   }
 
   const handleGetStarted = () => {
-    toast.success('🎯 Redirecting to demo login...')
+    toast.success('🎯 Redirecting to login...')
     navigate('/login')
   }
 
@@ -118,7 +122,7 @@ const Hero = () => {
               onClick={handleGetStarted}
               className="flex items-center px-8 py-4 border-2 border-gray-600 text-white rounded-xl font-semibold text-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-300"
             >
-              Get Started
+              Quick Login
               <ArrowRight className="h-5 w-5 ml-2" />
             </motion.button>
           </motion.div>

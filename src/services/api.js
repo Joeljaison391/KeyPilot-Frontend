@@ -111,6 +111,32 @@ export const authAPI = {
     } catch (error) {
       throw error
     }
+  },
+
+  // Get demo API key
+  getDemoApiKey: async () => {
+    try {
+      // Get user credentials from localStorage
+      const token = localStorage.getItem('keypilot_token')
+      const userStr = localStorage.getItem('keypilot_user')
+      
+      if (!token || !userStr) {
+        throw new Error('User not authenticated. Please login first.')
+      }
+
+      const user = JSON.parse(userStr)
+      const userId = user?.userId
+      
+      if (!userId) {
+        throw new Error('User ID not found. Please login again.')
+      }
+
+      // Send userId and token as query parameters
+      const response = await apiClient.get(`/auth/demo-api-key?userId=${userId}&token=${token}`)
+      return response
+    } catch (error) {
+      throw error
+    }
   }
 }
 
