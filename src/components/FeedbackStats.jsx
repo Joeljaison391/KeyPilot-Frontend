@@ -8,6 +8,20 @@ function FeedbackStats() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
+  const [filters, setFilters] = useState({
+    startDate: '',
+    endDate: '',
+    type: '',
+    userId: ''
+  })
+
+  const feedbackTypes = [
+    { value: '', label: 'All Types' },
+    { value: 'bug-report', label: 'Bug Reports' },
+    { value: 'feature-request', label: 'Feature Requests' },
+    { value: 'general', label: 'General Feedback' },
+    { value: 'rating', label: 'Ratings' }
+  ]
 
   const fetchFeedbackStats = async () => {
     if (!token) {
@@ -17,12 +31,21 @@ function FeedbackStats() {
 
     setLoading(true)
     try {
-      const response = await fetch(`https://keypilot.onrender.com/api/feedback-stats`, {
-        method: 'GET',
+      // Build request body with filters
+      const requestBody = {}
+      
+      if (filters.startDate) requestBody.startDate = filters.startDate
+      if (filters.endDate) requestBody.endDate = filters.endDate
+      if (filters.type) requestBody.type = filters.type
+      if (filters.userId) requestBody.userId = filters.userId
+
+      const response = await fetch('https://keypilot.onrender.com/api/feedback-stats', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify(requestBody)
       })
 
       const result = await response.json()
@@ -55,9 +78,17 @@ function FeedbackStats() {
   }, [])
 
   const generateCurl = () => {
-    return `curl -X GET "https://keypilot.onrender.com/api/feedback-stats" \\
+    const requestBody = {}
+    
+    if (filters.startDate) requestBody.startDate = filters.startDate
+    if (filters.endDate) requestBody.endDate = filters.endDate
+    if (filters.type) requestBody.type = filters.type
+    if (filters.userId) requestBody.userId = filters.userId
+
+    return `curl -X POST "https://keypilot.onrender.com/api/feedback-stats" \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}"`
+  -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}" \\
+  -d '${JSON.stringify(requestBody, null, 2)}'`
   }
 
   const getScoreColor = (score) => {
@@ -116,6 +147,95 @@ function FeedbackStats() {
         </motion.button>
       </div>
 
+      {/* Filter Controls */}
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+        <h3 className="text-lg font-semibold text-white mb-4">Filter Options</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={filters.startDate}
+              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              End Date
+            </label>
+            <input
+              type="date"
+              value={filters.endDate}
+              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Feedback Type
+            </label>
+            <select
+              value={filters.type}
+              onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            >
+              {feedbackTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              User ID (Optional)
+            </label>
+            <input
+              type="text"
+              value={filters.userId}
+              onChange={(e) => setFilters({ ...filters, userId: e.target.value })}
+              placeholder="user-123"
+              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-4">
+          <button
+            onClick={() => setFilters({ startDate: '', endDate: '', type: '', userId: '' })}
+            className="text-gray-400 hover:text-white transition-colors text-sm"
+          >
+            Clear Filters
+          </button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={fetchFeedbackStats}
+            disabled={loading}
+            className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center space-x-2"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>Filtering...</span>
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                <span>Apply Filters</span>
+              </>
+            )}
+          </motion.button>
+        </div>
+      </div>
+
       {/* cURL Command */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
         <h3 className="text-lg font-semibold text-white mb-4">cURL Command</h3>
@@ -125,96 +245,130 @@ function FeedbackStats() {
       </div>
 
       {/* Results */}
-      {data && data.data && (
+      {data && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {/* Overall Stats */}
-          {data.data.overall_stats && (
+          {/* Feedback Overview */}
+          {data.data.success && data.data.data && (
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Overall Performance</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Feedback Statistics Overview</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {/* Total Feedback */}
                 <div className="bg-gray-700/30 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                    <span className="text-sm text-gray-300">Average Rating</span>
+                    <Star className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-gray-300">Total Feedback</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <p className={`text-2xl font-bold ${getScoreColor(data.data.overall_stats.average_rating || 0)}`}>
-                      {(data.data.overall_stats.average_rating || 0).toFixed(1)}
-                    </p>
-                    <div className="flex space-x-1">
-                      {renderStars(data.data.overall_stats.average_rating || 0)}
-                    </div>
-                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {data.data.data.totalFeedback || 0}
+                  </p>
                 </div>
 
+                {/* Message Status */}
                 <div className="bg-gray-700/30 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-2">
                     <ThumbsUp className="w-4 h-4 text-green-400" />
-                    <span className="text-sm text-gray-300">Positive Feedback</span>
+                    <span className="text-sm text-gray-300">Status</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">
-                    {data.data.overall_stats.positive_feedback || 0}
+                  <p className="text-green-400 font-medium">
+                    {data.data.success ? 'Success' : 'Failed'}
                   </p>
                   <p className="text-sm text-gray-400">
-                    {data.data.overall_stats.positive_percentage || 0}% positive
+                    {data.data.message}
                   </p>
                 </div>
 
+                {/* Applied Filters */}
                 <div className="bg-gray-700/30 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Target className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm text-gray-300">Match Quality</span>
+                    <Target className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm text-gray-300">Filters Applied</span>
                   </div>
-                  <p className={`text-2xl font-bold ${getScoreColor(data.data.overall_stats.match_quality || 0)}`}>
-                    {((data.data.overall_stats.match_quality || 0) * 100).toFixed(1)}%
-                  </p>
-                </div>
-
-                <div className="bg-gray-700/30 rounded-lg p-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Clock className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-gray-300">Avg Response Time</span>
-                  </div>
-                  <p className="text-2xl font-bold text-white">
-                    {data.data.overall_stats.average_response_time || 0}ms
+                  <p className="text-white text-sm">
+                    {filters.startDate || filters.endDate || filters.type || filters.userId 
+                      ? 'Yes' 
+                      : 'None'
+                    }
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Rating Distribution */}
-          {data.data.rating_distribution && (
+          {/* Feedback by Type */}
+          {data.data.success && data.data.data?.feedbackByType && (
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Rating Distribution</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Feedback by Type</h3>
               
-              <div className="space-y-3">
-                {[5, 4, 3, 2, 1].map((rating) => {
-                  const count = data.data.rating_distribution[rating] || 0
-                  const total = Object.values(data.data.rating_distribution).reduce((a, b) => a + b, 0)
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Object.entries(data.data.data.feedbackByType).map(([type, count]) => (
+                  <div key={type} className="bg-gray-700/30 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className={`w-3 h-3 rounded-full ${
+                        type === 'bug-report' ? 'bg-red-400' :
+                        type === 'feature-request' ? 'bg-blue-400' :
+                        type === 'general' ? 'bg-green-400' :
+                        'bg-yellow-400'
+                      }`}></div>
+                      <span className="text-sm text-gray-300 capitalize">
+                        {type.replace(/-/g, ' ')}
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">{count}</p>
+                    <p className="text-sm text-gray-400">
+                      {data.data.data.totalFeedback > 0 
+                        ? `${((count / data.data.data.totalFeedback) * 100).toFixed(1)}%`
+                        : '0%'
+                      }
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sentiment Analysis */}
+          {data.data.success && data.data.data?.sentimentAnalysis && (
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+              <h3 className="text-lg font-semibold text-white mb-4">Sentiment Analysis</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {Object.entries(data.data.data.sentimentAnalysis).map(([sentiment, count]) => {
+                  const total = Object.values(data.data.data.sentimentAnalysis).reduce((a, b) => a + b, 0)
                   const percentage = total > 0 ? (count / total) * 100 : 0
                   
                   return (
-                    <div key={rating} className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1 w-20">
-                        <span className="text-white font-medium">{rating}</span>
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                    <div key={sentiment} className="bg-gray-700/30 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          sentiment === 'positive' ? 'bg-green-400' :
+                          sentiment === 'neutral' ? 'bg-yellow-400' :
+                          'bg-red-400'
+                        }`}></div>
+                        <span className="text-sm text-gray-300 capitalize">{sentiment}</span>
                       </div>
-                      <div className="flex-1 bg-gray-600 rounded-full h-3">
-                        <div
-                          className={`h-3 rounded-full bg-gradient-to-r ${getScoreGradient(rating)}`}
-                          style={{ width: `${percentage}%` }}
-                        ></div>
+                      <div className="flex items-center space-x-3">
+                        <p className="text-2xl font-bold text-white">{count}</p>
+                        <div className="flex-1">
+                          <div className="w-full bg-gray-600 rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full ${
+                                sentiment === 'positive' ? 'bg-green-400' :
+                                sentiment === 'neutral' ? 'bg-yellow-400' :
+                                'bg-red-400'
+                              }`}
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="w-16 text-right">
-                        <span className="text-white font-medium">{count}</span>
-                        <span className="text-gray-400 text-sm ml-1">({percentage.toFixed(1)}%)</span>
-                      </div>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {percentage.toFixed(1)}%
+                      </p>
                     </div>
                   )
                 })}
@@ -222,84 +376,24 @@ function FeedbackStats() {
             </div>
           )}
 
-          {/* Recent Feedback */}
-          {data.data.recent_feedback && data.data.recent_feedback.length > 0 && (
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Recent Feedback</h3>
-              
-              <div className="space-y-4">
-                {data.data.recent_feedback.map((feedback, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-gray-700/30 rounded-lg p-4"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex space-x-1">
-                          {renderStars(feedback.rating || 0)}
-                        </div>
-                        <span className="text-gray-400 text-sm">
-                          {new Date(feedback.timestamp || Date.now()).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {feedback.match_quality && (
-                          <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs">
-                            {(feedback.match_quality * 100).toFixed(1)}% match
-                          </span>
-                        )}
-                        {feedback.response_time && (
-                          <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded text-xs">
-                            {feedback.response_time}ms
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {feedback.intent && (
-                      <div className="mb-2">
-                        <p className="text-gray-400 text-sm">Intent:</p>
-                        <p className="text-white">{feedback.intent}</p>
-                      </div>
-                    )}
-                    
-                    {feedback.comment && (
-                      <div className="bg-gray-800/50 rounded p-3">
-                        <p className="text-gray-300 text-sm">{feedback.comment}</p>
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
+          {/* Error Display */}
+          {(!data.data.success || data.status === 'error') && (
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-red-700/50">
+              <h3 className="text-lg font-semibold text-red-400 mb-4">Error Response</h3>
+              <div className="bg-red-900/20 border border-red-700/30 rounded-lg p-4">
+                <p className="text-red-400 font-medium mb-2">
+                  Status: {data.status} - {data.data.message || 'Failed to retrieve feedback stats'}
+                </p>
+                {data.data.error && (
+                  <p className="text-red-300 text-sm">{data.data.error}</p>
+                )}
               </div>
             </div>
           )}
 
-          {/* Performance Metrics */}
-          {data.data.performance_metrics && (
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Performance Metrics</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {Object.entries(data.data.performance_metrics).map(([key, value]) => (
-                  <div key={key} className="bg-gray-700/30 rounded-lg p-4">
-                    <p className="text-gray-400 text-sm capitalize mb-1">
-                      {key.replace(/_/g, ' ')}
-                    </p>
-                    <p className="text-white text-lg font-semibold">
-                      {typeof value === 'number' ? value.toFixed(2) : value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Raw Data */}
+          {/* Raw Response Data */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-            <h3 className="text-lg font-semibold text-white mb-4">Raw Feedback Data</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Raw Response</h3>
             <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
               {JSON.stringify(data.data, null, 2)}
             </pre>
@@ -308,12 +402,12 @@ function FeedbackStats() {
       )}
 
       {/* Empty State */}
-      {data && data.data && Object.keys(data.data).length === 0 && (
+      {!data && (
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-12 border border-gray-700/50 text-center">
           <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-300 mb-2">No Feedback Data</h3>
           <p className="text-gray-400">
-            Start using the API proxy to generate feedback and performance metrics
+            Configure filters and click "Apply Filters" to retrieve feedback statistics
           </p>
         </div>
       )}

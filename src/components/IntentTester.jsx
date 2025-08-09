@@ -7,19 +7,20 @@ import toast from 'react-hot-toast'
 function IntentTester() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [intent, setIntent] = useState('create artistic image with AI')
-  const [debugLevel, setDebugLevel] = useState('detailed')
+  const [query, setQuery] = useState('Find the nearest coffee shop')
+  const [sessionId, setSessionId] = useState('user-session-123')
+  const [context, setContext] = useState('{"location": "New York"}')
   const [results, setResults] = useState(null)
 
-  const presetIntents = [
-    'create artistic image with AI',
-    'generate text using machine learning',
-    'translate text to Spanish',
-    'analyze sentiment of user feedback',
-    'convert speech to text',
-    'summarize long documents',
-    'generate code snippets',
-    'create music compositions'
+  const presetQueries = [
+    'Find the nearest coffee shop',
+    'Generate a creative story about AI',
+    'Translate this text to Spanish',
+    'Analyze sentiment of user feedback',
+    'Convert speech to text',
+    'Summarize long documents',
+    'Generate code snippets',
+    'Create music compositions'
   ]
 
   const handleTest = async () => {
@@ -30,12 +31,25 @@ function IntentTester() {
 
     setLoading(true)
     try {
-      const requestBody = {
-        intent: intent,
-        debug_level: debugLevel
+      // Parse context JSON if provided
+      let parsedContext = {}
+      if (context.trim()) {
+        try {
+          parsedContext = JSON.parse(context)
+        } catch (err) {
+          toast.error('Invalid JSON format in context field')
+          setLoading(false)
+          return
+        }
       }
 
-      const response = await fetch('https://keypilot.onrender.com/api/proxy/test', {
+      const requestBody = {
+        query: query,
+        sessionId: sessionId,
+        context: parsedContext
+      }
+
+      const response = await fetch('https://keypilot.onrender.com/api/intent/test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,9 +66,9 @@ function IntentTester() {
       })
 
       if (response.ok) {
-        toast.success('Intent analysis complete! 🧠')
+        toast.success('Intent test complete! 🧠')
       } else {
-        toast.error('Analysis failed - check response details')
+        toast.error('Intent test failed - check response details')
       }
     } catch (error) {
       console.error('Intent test error:', error)
@@ -63,19 +77,29 @@ function IntentTester() {
         data: { error: error.message },
         timestamp: new Date().toISOString()
       })
-      toast.error('Failed to connect to test endpoint')
+      toast.error('Failed to connect to intent test endpoint')
     } finally {
       setLoading(false)
     }
   }
 
   const generateCurl = () => {
-    const requestBody = {
-      intent: intent,
-      debug_level: debugLevel
+    let parsedContext = {}
+    if (context.trim()) {
+      try {
+        parsedContext = JSON.parse(context)
+      } catch (err) {
+        parsedContext = { error: 'Invalid JSON' }
+      }
     }
 
-    return `curl -X POST "https://keypilot.onrender.com/api/proxy/test" \\
+    const requestBody = {
+      query: query,
+      sessionId: sessionId,
+      context: parsedContext
+    }
+
+    return `curl -X POST "https://keypilot.onrender.com/api/intent/test" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_SESSION_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`
@@ -102,30 +126,42 @@ function IntentTester() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Intent to Analyze
+              Query
             </label>
             <textarea
-              value={intent}
-              onChange={(e) => setIntent(e.target.value)}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               rows={3}
-              placeholder="Describe what you want to test..."
+              placeholder="Enter your query or intent to test..."
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Debug Level
+              Session ID
             </label>
-            <select
-              value={debugLevel}
-              onChange={(e) => setDebugLevel(e.target.value)}
-              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            >
-              <option value="basic">Basic</option>
-              <option value="detailed">Detailed</option>
-              <option value="verbose">Verbose</option>
-            </select>
+            <input
+              type="text"
+              value={sessionId}
+              onChange={(e) => setSessionId(e.target.value)}
+              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="user-session-123"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Context (Optional JSON)
+            </label>
+            <textarea
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono text-sm"
+              rows={3}
+              placeholder='{"location": "New York", "user_preferences": {}}'
+            />
+            <p className="text-xs text-gray-400 mt-1">Enter valid JSON object for additional context</p>
           </div>
 
           <motion.button
@@ -138,35 +174,35 @@ function IntentTester() {
             {loading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Analyzing...</span>
+                <span>Testing Intent...</span>
               </>
             ) : (
               <>
                 <Brain className="w-4 h-4" />
-                <span>Analyze Intent</span>
+                <span>Test Intent</span>
               </>
             )}
           </motion.button>
         </div>
       </div>
 
-      {/* Preset Intents */}
+      {/* Preset Queries */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-        <h3 className="text-lg font-semibold text-white mb-4">Quick Test Intents</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Quick Test Queries</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {presetIntents.map((presetIntent, index) => (
+          {presetQueries.map((presetQuery, index) => (
             <motion.button
               key={index}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setIntent(presetIntent)}
+              onClick={() => setQuery(presetQuery)}
               className={`p-3 rounded-lg border text-left transition-all ${
-                intent === presetIntent
+                query === presetQuery
                   ? 'bg-purple-600/20 border-purple-500 text-purple-400'
                   : 'bg-gray-700/30 border-gray-600 text-gray-300 hover:border-gray-500'
               }`}
             >
-              <p className="text-sm">{presetIntent}</p>
+              <p className="text-sm">{presetQuery}</p>
             </motion.button>
           ))}
         </div>
@@ -187,84 +223,71 @@ function IntentTester() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {/* Analysis Summary */}
-          {results.data.semantic_analysis && (
+          {/* Response Summary */}
+          {results.data.success && results.data.data && (
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Semantic Analysis</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Intent Test Results</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-gray-700/30 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Search className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm text-gray-300">Intent Processing</span>
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-gray-300">Test Status</span>
                   </div>
-                  <p className="text-white font-medium">{results.data.semantic_analysis.processed_intent}</p>
+                  <p className="text-green-400 font-medium">
+                    {results.data.success ? 'Success' : 'Failed'}
+                  </p>
+                  <p className="text-gray-400 text-sm">{results.data.message}</p>
                 </div>
 
-                <div className="bg-gray-700/30 rounded-lg p-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Target className="w-4 h-4 text-green-400" />
-                    <span className="text-sm text-gray-300">Best Match</span>
+                {results.data.data.match && (
+                  <div className="bg-gray-700/30 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Target className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm text-gray-300">Best Match</span>
+                    </div>
+                    <p className="text-white font-medium">{results.data.data.match}</p>
+                    {results.data.data.score && (
+                      <p className={`text-sm ${getConfidenceColor(results.data.data.score)}`}>
+                        Score: {(results.data.data.score * 100).toFixed(1)}%
+                      </p>
+                    )}
                   </div>
-                  <p className="text-white font-medium">{results.data.semantic_analysis.best_match?.template}</p>
-                  {results.data.semantic_analysis.best_match?.confidence && (
-                    <p className={`text-sm ${getConfidenceColor(results.data.semantic_analysis.best_match.confidence)}`}>
-                      {(results.data.semantic_analysis.best_match.confidence * 100).toFixed(1)}% confidence
-                    </p>
-                  )}
-                </div>
-
-                <div className="bg-gray-700/30 rounded-lg p-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Zap className="w-4 h-4 text-yellow-400" />
-                    <span className="text-sm text-gray-300">Processing Time</span>
-                  </div>
-                  <p className="text-white font-medium">{results.data.processing_time_ms}ms</p>
-                </div>
+                )}
               </div>
 
-              {/* Vector Similarities */}
-              {results.data.semantic_analysis.vector_similarities && (
+              {/* Additional Response Data */}
+              {results.data.data && Object.keys(results.data.data).length > 0 && (
                 <div>
-                  <h4 className="text-white font-medium mb-3">Template Similarities</h4>
-                  <div className="space-y-2">
-                    {results.data.semantic_analysis.vector_similarities.map((similarity, index) => {
-                      const ConfidenceIcon = getConfidenceIcon(similarity.confidence)
-                      return (
-                        <div key={index} className="flex items-center justify-between bg-gray-700/20 rounded-lg p-3">
-                          <div className="flex items-center space-x-3">
-                            <ConfidenceIcon className={`w-4 h-4 ${getConfidenceColor(similarity.confidence)}`} />
-                            <div>
-                              <p className="text-white font-medium">{similarity.template}</p>
-                              <p className="text-gray-400 text-sm">{similarity.description}</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className={`font-medium ${getConfidenceColor(similarity.confidence)}`}>
-                              {(similarity.confidence * 100).toFixed(1)}%
-                            </p>
-                            <div className="w-20 bg-gray-600 rounded-full h-2 mt-1">
-                              <div 
-                                className={`h-2 rounded-full ${
-                                  similarity.confidence >= 0.8 ? 'bg-green-400' :
-                                  similarity.confidence >= 0.6 ? 'bg-yellow-400' : 'bg-red-400'
-                                }`}
-                                style={{ width: `${similarity.confidence * 100}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
+                  <h4 className="text-white font-medium mb-3">Response Details</h4>
+                  <div className="bg-gray-700/20 rounded-lg p-4">
+                    <pre className="text-sm text-gray-300 whitespace-pre-wrap">
+                      {JSON.stringify(results.data.data, null, 2)}
+                    </pre>
                   </div>
                 </div>
               )}
             </div>
           )}
 
-          {/* Raw Debug Data */}
+          {/* Error Display */}
+          {(!results.data.success || results.status === 'error') && (
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-red-700/50">
+              <h3 className="text-lg font-semibold text-red-400 mb-4">Error Response</h3>
+              <div className="bg-red-900/20 border border-red-700/30 rounded-lg p-4">
+                <p className="text-red-400 font-medium mb-2">
+                  Status: {results.status} - {results.data.message || 'Unknown error'}
+                </p>
+                {results.data.error && (
+                  <p className="text-red-300 text-sm">{results.data.error}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Raw Response Data */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-            <h3 className="text-lg font-semibold text-white mb-4">Debug Information</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Raw Response</h3>
             <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
               {JSON.stringify(results.data, null, 2)}
             </pre>

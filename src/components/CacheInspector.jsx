@@ -8,31 +8,55 @@ function CacheInspector() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
-  const [params, setParams] = useState({
-    similarity_threshold: 0.8,
-    min_cluster_size: 3
-  })
+  const [cacheKey, setCacheKey] = useState('user-session-123')
+  const [inspectionMode, setInspectionMode] = useState('specific') // 'specific' or 'overview'
 
-  const fetchCacheAnalysis = async () => {
+  const presetCacheKeys = [
+    'user-session-123',
+    'api-keys:*',
+    'embeddings:*',
+    'session-data:*',
+    'user:profile:*',
+    'cache:semantic:*'
+  ]
+
+  const fetchCacheInspection = async () => {
     if (!token) {
       toast.error('No authentication token available')
       return
     }
 
+    if (!cacheKey.trim()) {
+      toast.error('Please enter a cache key to inspect')
+      return
+    }
+
     setLoading(true)
     try {
-      const queryParams = new URLSearchParams({
-        similarity_threshold: params.similarity_threshold,
-        min_cluster_size: params.min_cluster_size
-      })
-
-      const response = await fetch(`https://keypilot.onrender.com/api/cache-inspector?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      let response
+      
+      if (inspectionMode === 'specific') {
+        // Inspect specific cache entry
+        response = await fetch('https://keypilot.onrender.com/api/cache-inspector', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            cacheKey: cacheKey
+          })
+        })
+      } else {
+        // Get cache overview/list
+        response = await fetch('https://keypilot.onrender.com/api/cache-inspector', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      }
 
       const result = await response.json()
       setData({
@@ -42,9 +66,9 @@ function CacheInspector() {
       })
 
       if (response.ok) {
-        toast.success('Cache analysis complete! 🔍')
+        toast.success('Cache inspection complete! 🔍')
       } else {
-        toast.error('Analysis failed - check response details')
+        toast.error('Cache inspection failed - check response details')
       }
     } catch (error) {
       console.error('Cache inspector error:', error)
@@ -53,14 +77,14 @@ function CacheInspector() {
         data: { error: error.message },
         timestamp: new Date().toISOString()
       })
-      toast.error('Failed to connect to cache inspector')
+      toast.error('Failed to connect to cache inspector endpoint')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchCacheAnalysis()
+    fetchCacheInspection()
   }, [])
 
   const getHealthColor = (score) => {
@@ -76,75 +100,104 @@ function CacheInspector() {
   }
 
   const generateCurl = () => {
-    const queryParams = new URLSearchParams({
-      similarity_threshold: params.similarity_threshold,
-      min_cluster_size: params.min_cluster_size
-    })
+    if (inspectionMode === 'specific') {
+      const requestBody = {
+        cacheKey: cacheKey
+      }
 
-    return `curl -X GET "https://keypilot.onrender.com/api/cache-inspector?${queryParams}" \\
+      return `curl -X POST "https://keypilot.onrender.com/api/cache-inspector" \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}" \\
+  -d '${JSON.stringify(requestBody, null, 2)}'`
+    } else {
+      return `curl -X GET "https://keypilot.onrender.com/api/cache-inspector" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}"`
+    }
   }
 
   return (
     <div className="space-y-6">
       {/* Controls */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-        <h3 className="text-lg font-semibold text-white mb-4">Analysis Parameters</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Cache Inspector Configuration</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Similarity Threshold
+              Inspection Mode
             </label>
-            <input
-              type="number"
-              min="0.1"
-              max="0.99"
-              step="0.01"
-              value={params.similarity_threshold}
-              onChange={(e) => setParams({ ...params, similarity_threshold: parseFloat(e.target.value) })}
+            <select
+              value={inspectionMode}
+              onChange={(e) => setInspectionMode(e.target.value)}
               className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Min Cluster Size
-            </label>
-            <input
-              type="number"
-              min="2"
-              max="50"
-              value={params.min_cluster_size}
-              onChange={(e) => setParams({ ...params, min_cluster_size: parseInt(e.target.value) })}
-              className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex items-end">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={fetchCacheAnalysis}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>Analyzing...</span>
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Analyze Cache</span>
-                </>
-              )}
-            </motion.button>
+              <option value="specific">Inspect Specific Cache Key</option>
+              <option value="overview">Cache Overview</option>
+            </select>
           </div>
+
+          {inspectionMode === 'specific' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Cache Key to Inspect
+              </label>
+              <input
+                type="text"
+                value={cacheKey}
+                onChange={(e) => setCacheKey(e.target.value)}
+                placeholder="user-session-123"
+                className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-400 mt-1">Enter the exact cache key or use wildcards (*)</p>
+            </div>
+          )}
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={fetchCacheInspection}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>Inspecting...</span>
+              </>
+            ) : (
+              <>
+                <Search className="w-4 h-4" />
+                <span>Inspect Cache</span>
+              </>
+            )}
+          </motion.button>
         </div>
       </div>
+
+      {/* Preset Cache Keys */}
+      {inspectionMode === 'specific' && (
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+          <h3 className="text-lg font-semibold text-white mb-4">Common Cache Keys</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {presetCacheKeys.map((presetKey, index) => (
+              <motion.button
+                key={index}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setCacheKey(presetKey)}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  cacheKey === presetKey
+                    ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+                    : 'bg-gray-700/30 border-gray-600 text-gray-300 hover:border-gray-500'
+                }`}
+              >
+                <p className="text-sm font-mono">{presetKey}</p>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* cURL Command */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
@@ -155,132 +208,137 @@ function CacheInspector() {
       </div>
 
       {/* Results */}
-      {data && data.data && (
+      {data && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {/* Cache Health Overview */}
-          {data.data.cache_health && (
+          {/* Cache Entry Details */}
+          {data.data.success && data.data.data && (
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Cache Health Overview</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Cache Entry Details</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-gray-700/30 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Activity className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm text-gray-300">Overall Score</span>
+                    <Database className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-gray-300">Cache Key</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <p className={`text-2xl font-bold ${getHealthColor(data.data.cache_health.overall_score)}`}>
-                      {data.data.cache_health.overall_score}
-                    </p>
-                    <div className="flex-1">
-                      <div className="w-full bg-gray-600 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full bg-gradient-to-r ${getHealthGradient(data.data.cache_health.overall_score)}`}
-                          style={{ width: `${data.data.cache_health.overall_score}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-white font-mono text-sm break-all">
+                    {data.data.data.cacheKey || cacheKey}
+                  </p>
                 </div>
 
                 <div className="bg-gray-700/30 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Database className="w-4 h-4 text-green-400" />
-                    <span className="text-sm text-gray-300">Total Entries</span>
+                    <Activity className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-gray-300">Status</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">{data.data.cache_health.total_entries}</p>
-                </div>
-
-                <div className="bg-gray-700/30 rounded-lg p-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <TrendingUp className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-gray-300">Storage Efficiency</span>
-                  </div>
-                  <p className={`text-2xl font-bold ${getHealthColor(data.data.cache_health.storage_efficiency)}`}>
-                    {data.data.cache_health.storage_efficiency}%
+                  <p className="text-green-400 font-medium">
+                    {data.data.success ? 'Found' : 'Not Found'}
                   </p>
                 </div>
               </div>
+
+              {/* Cache Value Display */}
+              {data.data.data.value && (
+                <div>
+                  <h4 className="text-white font-medium mb-3">Cache Value</h4>
+                  <div className="bg-gray-700/20 rounded-lg p-4">
+                    <pre className="text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto">
+                      {typeof data.data.data.value === 'object' 
+                        ? JSON.stringify(data.data.data.value, null, 2)
+                        : data.data.data.value
+                      }
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Metadata */}
+              {data.data.data.metadata && (
+                <div className="mt-4">
+                  <h4 className="text-white font-medium mb-3">Metadata</h4>
+                  <div className="bg-gray-700/20 rounded-lg p-4">
+                    <pre className="text-sm text-gray-300 whitespace-pre-wrap">
+                      {JSON.stringify(data.data.data.metadata, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Clusters */}
-          {data.data.clusters && data.data.clusters.length > 0 && (
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Intent Clusters</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Groups of similar cached intents based on vector similarity
-              </p>
-              
-              <div className="space-y-4">
-                {data.data.clusters.map((cluster, index) => (
-                  <motion.div
-                    key={cluster.id || index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-gray-700/30 rounded-lg p-4"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${
-                          index % 4 === 0 ? 'from-blue-400 to-purple-400' :
-                          index % 4 === 1 ? 'from-green-400 to-blue-400' :
-                          index % 4 === 2 ? 'from-yellow-400 to-orange-400' :
-                          'from-pink-400 to-red-400'
-                        }`}></div>
-                        <h4 className="text-white font-medium">Cluster {cluster.id}</h4>
-                      </div>
-                      <div className="flex items-center space-x-4 text-sm text-gray-400">
-                        <span>{cluster.size} intents</span>
-                        <span>{(cluster.coherence_score * 100).toFixed(1)}% coherence</span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-800/50 rounded p-3">
-                      <p className="text-gray-300 text-sm font-medium mb-1">Representative Intent:</p>
-                      <p className="text-white">{cluster.representative_intent}</p>
-                    </div>
-                  </motion.div>
-                ))}
+          {/* Error Display */}
+          {(!data.data.success || data.status === 'error') && (
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-red-700/50">
+              <h3 className="text-lg font-semibold text-red-400 mb-4">Cache Inspection Error</h3>
+              <div className="bg-red-900/20 border border-red-700/30 rounded-lg p-4">
+                <p className="text-red-400 font-medium mb-2">
+                  Status: {data.status} - {data.data.message || 'Cache entry not found'}
+                </p>
+                {data.data.error && (
+                  <p className="text-red-300 text-sm">{data.data.error}</p>
+                )}
+                {!data.data.success && inspectionMode === 'specific' && (
+                  <p className="text-red-300 text-sm mt-2">
+                    The cache key "{cacheKey}" was not found in Redis cache.
+                  </p>
+                )}
               </div>
             </div>
           )}
 
-          {/* Recommendations */}
-          {data.data.recommendations && data.data.recommendations.length > 0 && (
+          {/* Cache Overview for overview mode */}
+          {inspectionMode === 'overview' && data.data.success && data.data.data && (
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Optimization Recommendations</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Cache Overview</h3>
               
-              <div className="space-y-3">
-                {data.data.recommendations.map((recommendation, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start space-x-3 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4"
-                  >
-                    <AlertCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-gray-300">{recommendation}</p>
-                  </motion.div>
-                ))}
-              </div>
+              {data.data.data.keys && (
+                <div>
+                  <h4 className="text-white font-medium mb-3">Available Cache Keys</h4>
+                  <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
+                    {data.data.data.keys.map((key, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="bg-gray-700/30 rounded-lg p-3 cursor-pointer hover:bg-gray-700/50"
+                        onClick={() => {
+                          setCacheKey(key)
+                          setInspectionMode('specific')
+                        }}
+                      >
+                        <p className="text-gray-300 font-mono text-sm">{key}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Raw Data */}
+          {/* Raw Response Data */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-            <h3 className="text-lg font-semibold text-white mb-4">Raw Analysis Data</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Raw Response</h3>
             <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
               {JSON.stringify(data.data, null, 2)}
             </pre>
           </div>
         </motion.div>
+      )}
+
+      {/* Empty State */}
+      {!data && (
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-12 border border-gray-700/50 text-center">
+          <Database className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-300 mb-2">No Cache Data</h3>
+          <p className="text-gray-400">
+            Enter a cache key and click "Inspect Cache" to view Redis cache entries
+          </p>
+        </div>
       )}
     </div>
   )
