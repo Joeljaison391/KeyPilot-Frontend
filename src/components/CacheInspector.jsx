@@ -43,16 +43,12 @@ function CacheInspector() {
       
       if (inspectionMode === 'specific') {
         // Inspect specific cache entry
-        response = await fetch(`${BASE_URL}/api/cache-inspector`, {
-          method: 'POST',
+        response = await fetch(`${BASE_URL}/api/cache-inspector?cacheKey=${encodeURIComponent(cacheKey)}`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            token: token, // Add token to request body
-            cacheKey: cacheKey
-          })
+          }
         })
       } else {
         // Get cache overview/list
