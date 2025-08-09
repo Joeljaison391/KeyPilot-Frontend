@@ -213,7 +213,7 @@ const LoginPage = () => {
                     <div className="text-sm text-orange-300">
                       <p className="font-medium mb-1">Backend server is not running</p>
                       <p className="text-xs opacity-90">
-                        Make sure your Redis backend is running on keypilot.onrender.com before attempting to login.
+                        Make sure your Redis backend is running before attempting to login.
                       </p>
                     </div>
                   </div>

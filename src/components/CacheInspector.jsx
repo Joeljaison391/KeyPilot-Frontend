@@ -4,6 +4,8 @@ import { Database, Activity, TrendingUp, AlertCircle, RefreshCw, Search } from '
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://keypilot.onrender.com'
+
 function CacheInspector() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -33,23 +35,28 @@ function CacheInspector() {
 
     setLoading(true)
     try {
+      console.log('CacheInspector - BASE_URL:', BASE_URL)
+      console.log('CacheInspector - token:', token)
+      console.log('CacheInspector - VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
+      
       let response
       
       if (inspectionMode === 'specific') {
         // Inspect specific cache entry
-        response = await fetch('https://keypilot.onrender.com/api/cache-inspector', {
+        response = await fetch(`${BASE_URL}/api/cache-inspector`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
+            token: token, // Add token to request body
             cacheKey: cacheKey
           })
         })
       } else {
         // Get cache overview/list
-        response = await fetch('https://keypilot.onrender.com/api/cache-inspector', {
+        response = await fetch(`${BASE_URL}/api/cache-inspector`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -102,15 +109,16 @@ function CacheInspector() {
   const generateCurl = () => {
     if (inspectionMode === 'specific') {
       const requestBody = {
+        token: token || 'YOUR_TOKEN', // Include token in request body
         cacheKey: cacheKey
       }
 
-      return `curl -X POST "https://keypilot.onrender.com/api/cache-inspector" \\
+      return `curl -X POST "${BASE_URL}/api/cache-inspector" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`
     } else {
-      return `curl -X GET "https://keypilot.onrender.com/api/cache-inspector" \\
+      return `curl -X GET "${BASE_URL}/api/cache-inspector" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}"`
     }
@@ -276,10 +284,21 @@ function CacheInspector() {
               <h3 className="text-lg font-semibold text-red-400 mb-4">Cache Inspection Error</h3>
               <div className="bg-red-900/20 border border-red-700/30 rounded-lg p-4">
                 <p className="text-red-400 font-medium mb-2">
-                  Status: {data.status} - {data.data.message || 'Cache entry not found'}
+                  Status: {data.status} - {
+                    typeof data.data.message === 'string' 
+                      ? data.data.message 
+                      : typeof data.data.message === 'object'
+                        ? JSON.stringify(data.data.message)
+                        : 'Cache entry not found'
+                  }
                 </p>
                 {data.data.error && (
-                  <p className="text-red-300 text-sm">{data.data.error}</p>
+                  <p className="text-red-300 text-sm">
+                    {typeof data.data.error === 'string' 
+                      ? data.data.error 
+                      : JSON.stringify(data.data.error)
+                    }
+                  </p>
                 )}
                 {!data.data.success && inspectionMode === 'specific' && (
                   <p className="text-red-300 text-sm mt-2">

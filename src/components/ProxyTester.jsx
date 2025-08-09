@@ -4,6 +4,13 @@ import { Play, Copy, Download, AlertCircle, CheckCircle, Clock, Zap } from 'luci
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://keypilot.onrender.com'
+
+console.log('ProxyTester - Environment check:')
+console.log('- import.meta.env.VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
+console.log('- import.meta.env.MODE:', import.meta.env.MODE)
+console.log('- BASE_URL resolved to:', BASE_URL)
+
 function ProxyTester() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -70,13 +77,20 @@ function ProxyTester() {
 
     setLoading(true)
     try {
+      console.log('ProxyTester - BASE_URL:', BASE_URL)
+      console.log('ProxyTester - token:', token)
+      console.log('ProxyTester - VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
+      
       const requestBody = {
+        token: token, // Add token to request body
         intent: request.intent,
         payload: request.payload,
         origin: request.origin
       }
+      
+      console.log('ProxyTester - requestBody:', requestBody)
 
-      const response = await fetch('https://keypilot.onrender.com/api/proxy', {
+      const response = await fetch(`${BASE_URL}/api/proxy`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,12 +145,13 @@ function ProxyTester() {
 
   const generateCurl = () => {
     const requestBody = {
+      token: token || 'YOUR_SESSION_TOKEN', // Include token in request body
       intent: request.intent,
       payload: request.payload,
       origin: request.origin
     }
 
-    return `curl -X POST "https://keypilot.onrender.com/api/proxy" \\
+    return `curl -X POST "${BASE_URL}/api/proxy" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_SESSION_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`

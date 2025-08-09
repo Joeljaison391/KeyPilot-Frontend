@@ -4,6 +4,8 @@ import { Star, ThumbsUp, ThumbsDown, Target, Clock, RefreshCw } from 'lucide-rea
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://keypilot.onrender.com'
+
 function FeedbackStats() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -32,14 +34,16 @@ function FeedbackStats() {
     setLoading(true)
     try {
       // Build request body with filters
-      const requestBody = {}
+      const requestBody = {
+        token: token // Add token to request body
+      }
       
       if (filters.startDate) requestBody.startDate = filters.startDate
       if (filters.endDate) requestBody.endDate = filters.endDate
       if (filters.type) requestBody.type = filters.type
       if (filters.userId) requestBody.userId = filters.userId
 
-      const response = await fetch('https://keypilot.onrender.com/api/feedback-stats', {
+      const response = await fetch(`${BASE_URL}/api/feedback-stats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,14 +82,16 @@ function FeedbackStats() {
   }, [])
 
   const generateCurl = () => {
-    const requestBody = {}
+    const requestBody = {
+      token: token || 'YOUR_TOKEN' // Include token in request body
+    }
     
     if (filters.startDate) requestBody.startDate = filters.startDate
     if (filters.endDate) requestBody.endDate = filters.endDate
     if (filters.type) requestBody.type = filters.type
     if (filters.userId) requestBody.userId = filters.userId
 
-    return `curl -X POST "https://keypilot.onrender.com/api/feedback-stats" \\
+    return `curl -X POST "${BASE_URL}/api/feedback-stats" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`

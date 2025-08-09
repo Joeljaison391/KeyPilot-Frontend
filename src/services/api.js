@@ -34,16 +34,16 @@ apiClient.interceptors.response.use(
   (error) => {
     // Handle different error scenarios
     if (error.code === 'ECONNREFUSED') {
-      console.error('Backend server is not running on keypilot.onrender.com')
-      return Promise.reject({
-        response: {
-          data: {
-            success: false,
-            error: 'Connection failed',
-            message: 'Backend server is not available. Please check your connection to keypilot.onrender.com'
-          }
+      console.error('Backend server is not running')
+      console.error(error)
+      throw {
+        success: false,
+        error: true,
+        message: error.message,
+        details: {
+          message: 'Backend server is not available. Please check your connection'
         }
-      })
+      }
     }
     
     if (error.response?.status === 401) {

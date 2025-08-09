@@ -34,7 +34,7 @@ import {
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
-const BASE_URL = 'https://keypilot.onrender.com'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://keypilot.onrender.com'
 
 function IntentTrends() {
   const { user, token } = useAuth()

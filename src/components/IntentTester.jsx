@@ -4,6 +4,8 @@ import { Brain, Search, Target, Zap, AlertTriangle, CheckCircle } from 'lucide-r
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://keypilot.onrender.com'
+
 function IntentTester() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -49,7 +51,7 @@ function IntentTester() {
         context: parsedContext
       }
 
-      const response = await fetch('https://keypilot.onrender.com/api/intent/test', {
+      const response = await fetch(`${BASE_URL}/api/intent/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +101,7 @@ function IntentTester() {
       context: parsedContext
     }
 
-    return `curl -X POST "https://keypilot.onrender.com/api/intent/test" \\
+    return `curl -X POST "${BASE_URL}/api/intent/test" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${token || 'YOUR_SESSION_TOKEN'}" \\
   -d '${JSON.stringify(requestBody, null, 2)}'`

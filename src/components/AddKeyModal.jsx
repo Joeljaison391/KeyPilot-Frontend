@@ -98,11 +98,25 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         }))
         toast.success('Demo API key filled!')
       } else {
-        toast.error(response.message || 'Failed to get demo API key')
+        const message = typeof response.message === 'string' 
+          ? response.message 
+          : 'Failed to get demo API key'
+        toast.error(message)
       }
     } catch (error) {
       console.error('Demo API key error:', error)
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch demo API key'
+      let errorMessage = 'Failed to fetch demo API key'
+      
+      if (error.response?.data?.message) {
+        if (typeof error.response.data.message === 'string') {
+          errorMessage = error.response.data.message
+        } else if (typeof error.response.data.message === 'object') {
+          errorMessage = error.response.data.message.message || JSON.stringify(error.response.data.message)
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       toast.error(errorMessage)
     }
   }
@@ -282,7 +296,27 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         }
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'add'} API key`
+      console.error('API Key operation error:', error)
+      
+      let errorMessage = `Failed to ${isEditMode ? 'update' : 'add'} API key`
+      
+      // Safely extract error message
+      if (error.response?.data?.error) {
+        if (typeof error.response.data.error === 'string') {
+          errorMessage = error.response.data.error
+        } else if (typeof error.response.data.error === 'object') {
+          errorMessage = error.response.data.error.message || JSON.stringify(error.response.data.error)
+        }
+      } else if (error.response?.data?.message) {
+        if (typeof error.response.data.message === 'string') {
+          errorMessage = error.response.data.message
+        } else if (typeof error.response.data.message === 'object') {
+          errorMessage = error.response.data.message.message || JSON.stringify(error.response.data.message)
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       toast.error(errorMessage)
       
       // Handle semantic conflict
