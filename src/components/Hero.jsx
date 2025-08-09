@@ -10,7 +10,7 @@ const Hero = () => {
   const { showWelcomeScreen } = useConsent()
 
   const handleTryDemo = () => {
-    console.log('Try Demo button clicked - updated!') // Debug log
+    // console.log('Try Demo button clicked - updated!') // Debug log
     toast.success('🚀 Opening demo guide...')
     showWelcomeScreen()
   }

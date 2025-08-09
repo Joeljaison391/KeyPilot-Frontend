@@ -79,7 +79,7 @@ export const TourProvider = ({ children }) => {
 
   // Start tour (called when user first logs in)
   const startTour = () => {
-    console.log('startTour called')
+    // console.log('startTour called')
     setTourState(prev => ({
       ...prev,
       isActive: true,
@@ -94,12 +94,12 @@ export const TourProvider = ({ children }) => {
     setTourState(prev => {
       const nextStepIndex = prev.currentStep + 1
       
-      console.log(`Tour: Moving from step ${prev.currentStep} to step ${nextStepIndex}`)
-      console.log(`Total steps: ${tourSteps.length}`)
+    //   console.log(`Tour: Moving from step ${prev.currentStep} to step ${nextStepIndex}`)
+    //   console.log(`Total steps: ${tourSteps.length}`)
       
       if (nextStepIndex >= tourSteps.length) {
         // Tour completed
-        console.log('Tour: Completing tour')
+        // console.log('Tour: Completing tour')
         localStorage.setItem('keypilot_tour_completed', 'true')
         localStorage.removeItem('keypilot_show_tour')
         
@@ -129,7 +129,7 @@ export const TourProvider = ({ children }) => {
 
   // Skip tour
   const skipTour = () => {
-    console.log('skipTour called')
+    // console.log('skipTour called')
     setTourState(prev => ({
       ...prev,
       isActive: false,
@@ -143,7 +143,7 @@ export const TourProvider = ({ children }) => {
 
   // Complete tour
   const completeTour = () => {
-    console.log('completeTour called')
+    // console.log('completeTour called')
     setTourState(prev => ({
       ...prev,
       isActive: false,
@@ -168,21 +168,21 @@ export const TourProvider = ({ children }) => {
     const tourInProgress = localStorage.getItem('keypilot_tour_in_progress')
     const userToken = localStorage.getItem('keypilot_token')
     
-    console.log('checkFirstLogin called:', { 
-      hasCompletedTour, 
-      tourInProgress, 
-      isActive: tourState.isActive,
-      hasToken: !!userToken 
-    })
+    // console.log('checkFirstLogin called:', { 
+    //   hasCompletedTour, 
+    //   tourInProgress, 
+    //   isActive: tourState.isActive,
+    //   hasToken: !!userToken 
+    // })
     
     // Don't start tour if user is not properly authenticated
     if (!userToken) {
-      console.log('No user token found, not starting tour')
+    //   console.log('No user token found, not starting tour')
       return
     }
     
     if (!hasCompletedTour && !tourInProgress && !tourState.isActive) {
-      console.log('Starting tour for first time')
+    //   console.log('Starting tour for first time')
       localStorage.setItem('keypilot_tour_in_progress', 'true')
       
       // Wait a bit more to ensure all DOM elements are rendered
@@ -190,7 +190,7 @@ export const TourProvider = ({ children }) => {
         // Double-check user is still authenticated
         const currentToken = localStorage.getItem('keypilot_token')
         if (!currentToken) {
-          console.log('User token lost during tour preparation, aborting')
+        //   console.log('User token lost during tour preparation, aborting')
           localStorage.removeItem('keypilot_tour_in_progress')
           return
         }
@@ -198,32 +198,32 @@ export const TourProvider = ({ children }) => {
         // Check if the first tour target exists before starting
         const firstTarget = document.querySelector('[data-tour="user-token"]')
         if (firstTarget) {
-          console.log('Found tour target, starting tour')
+        //   console.log('Found tour target, starting tour')
           startTour()
         } else {
-          console.log('Tour target not found, delaying tour start')
+        //   console.log('Tour target not found, delaying tour start')
           // Retry after another second if target not found
           setTimeout(() => {
             const retryTarget = document.querySelector('[data-tour="user-token"]')
             const retryToken = localStorage.getItem('keypilot_token')
             if (retryTarget && retryToken) {
-              console.log('Found tour target on retry, starting tour')
+            //   console.log('Found tour target on retry, starting tour')
               startTour()
             } else {
-              console.log('Tour target still not found or user logged out, giving up')
+            //   console.log('Tour target still not found or user logged out, giving up')
               localStorage.removeItem('keypilot_tour_in_progress')
             }
           }, 2000) // Increased retry delay
         }
       }, 1000) // Increased initial delay
     } else {
-      console.log('Tour not starting:', { hasCompletedTour, tourInProgress, isActive: tourState.isActive })
+    //   console.log('Tour not starting:', { hasCompletedTour, tourInProgress, isActive: tourState.isActive })
     }
   }
 
   // Clean up tour state when user logs out
   const cleanupTourOnLogout = () => {
-    console.log('Cleaning up tour on logout')
+    // console.log('Cleaning up tour on logout')
     localStorage.removeItem('keypilot_tour_in_progress')
     setTourState(prev => ({
       ...prev,

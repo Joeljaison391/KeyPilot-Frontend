@@ -217,16 +217,16 @@ const TourOverlay = () => {
               
               <button
                 onClick={() => {
-                  console.log('Next button clicked:', { currentStep, isLastStep, totalSteps })
+                  // console.log('Next button clicked:', { currentStep, isLastStep, totalSteps })
                   if (isLastStep) {
-                    console.log('Completing tour')
+                    // console.log('Completing tour')
                     setShowCelebration(true)
                     setTimeout(() => {
                       completeTour()
                       setShowCelebration(false)
                     }, 4000) // Show celebration for 4 seconds
                   } else {
-                    console.log('Moving to next step')
+                    // console.log('Moving to next step')
                     nextStep()
                   }
                 }}
@@ -256,12 +256,12 @@ const TourOverlay = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80"
           >
-            {/* Floating particles */}
-            {Array.from({ length: 20 }).map((_, i) => (
+            {/* Minimalistic floating particles */}
+            {Array.from({ length: 8 }).map((_, i) => (
               <motion.div
-                key={i}
+                key={`particle-${i}`}
                 initial={{ 
                   y: '100vh', 
                   x: Math.random() * window.innerWidth,
@@ -270,174 +270,80 @@ const TourOverlay = () => {
                 }}
                 animate={{ 
                   y: '-100vh',
-                  opacity: [0, 1, 1, 0],
-                  scale: [0, 1, 1, 0],
-                  rotate: Math.random() * 360
+                  opacity: [0, 0.6, 0.6, 0],
+                  scale: [0, 1, 1, 0]
                 }}
                 transition={{ 
-                  duration: 3 + Math.random() * 2,
-                  delay: Math.random() * 2,
+                  duration: 4,
+                  delay: Math.random() * 1,
                   ease: "easeOut"
                 }}
-                className="absolute"
-              >
-                {i % 3 === 0 ? (
-                  <Star className="h-6 w-6 text-yellow-400" />
-                ) : i % 3 === 1 ? (
-                  <Sparkles className="h-5 w-5 text-blue-400" />
-                ) : (
-                  <Heart className="h-5 w-5 text-pink-400" />
-                )}
-              </motion.div>
+                className="absolute w-2 h-2 bg-blue-400 rounded-full"
+              />
             ))}
 
             {/* Main celebration content */}
             <motion.div
-              initial={{ scale: 0, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0, y: 50 }}
-              transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="text-center max-w-2xl mx-auto px-8"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-gray-800 border border-gray-700 rounded-2xl p-12 max-w-2xl mx-auto text-center shadow-2xl"
             >
-              {/* Main celebration text */}
+              {/* Checkmark icon */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", damping: 15 }}
+                className="mb-8"
+              >
+                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle className="h-10 w-10 text-white" />
+                </div>
+              </motion.div>
+
+              {/* Main text */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
                 className="mb-8"
               >
-                <motion.h1 
-                  className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent mb-6"
-                  animate={{ 
-                    scale: [1, 1.05, 1],
-                    textShadow: [
-                      "0 0 20px rgba(255,255,255,0.5)",
-                      "0 0 40px rgba(255,255,255,0.8)",
-                      "0 0 20px rgba(255,255,255,0.5)"
-                    ]
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  🎉 Congratulations! 🎉
-                </motion.h1>
+                <h1 className="text-4xl font-bold text-white mb-4">
+                  Tour Completed! 🎉
+                </h1>
                 
-                <motion.h2 
-                  className="text-4xl md:text-5xl font-bold text-white mb-4"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  Now test out our demo app!!!
-                </motion.h2>
+                <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
+                  Now test out our demo app!
+                </h2>
                 
-                <motion.p 
-                  className="text-xl md:text-2xl text-gray-300 mb-8"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.9 }}
-                >
+                <p className="text-gray-300 text-lg">
                   You're all set to explore KeyPilot's powerful features
-                </motion.p>
+                </p>
               </motion.div>
 
               {/* Call to action */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
+                transition={{ delay: 0.6 }}
                 className="mb-8"
               >
-                <motion.div 
-                  className="inline-block px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-white font-semibold text-lg shadow-2xl"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={{ 
-                    boxShadow: [
-                      "0 10px 30px rgba(34, 197, 94, 0.3)",
-                      "0 20px 40px rgba(34, 197, 94, 0.5)",
-                      "0 10px 30px rgba(34, 197, 94, 0.3)"
-                    ]
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  🚀 Please give your comments and feedback! 🚀
-                </motion.div>
+                <div className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white font-medium shadow-lg">
+                  Please give your comments and feedback! �
+                </div>
               </motion.div>
 
               {/* Thank you message */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5 }}
-                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="text-gray-400 text-sm"
               >
-                <motion.p 
-                  className="text-lg text-gray-400 flex items-center justify-center gap-2"
-                  animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  <Heart className="h-5 w-5 text-red-400" />
-                  Thank you 
-                  <span className="font-bold text-red-500">Redis</span> 
-                  for powering our backend!
-                  <Heart className="h-5 w-5 text-red-400" />
-                </motion.p>
-              </motion.div>
-
-              {/* Confetti burst effect */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.5, 0] }}
-                transition={{ 
-                  duration: 1,
-                  delay: 0.5,
-                  times: [0, 0.6, 1]
-                }}
-                className="absolute inset-0 pointer-events-none"
-              >
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  {Array.from({ length: 50 }).map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ 
-                        x: 0, 
-                        y: 0, 
-                        opacity: 1,
-                        scale: 1
-                      }}
-                      animate={{ 
-                        x: (Math.random() - 0.5) * 800,
-                        y: (Math.random() - 0.5) * 600,
-                        opacity: 0,
-                        scale: 0
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        delay: 0.5 + Math.random() * 0.5,
-                        ease: "easeOut"
-                      }}
-                      className="absolute w-3 h-3 rounded-full"
-                      style={{
-                        backgroundColor: [
-                          '#fbbf24', '#f59e0b', '#ef4444', '#ec4899',
-                          '#8b5cf6', '#3b82f6', '#10b981', '#06b6d4'
-                        ][i % 8]
-                      }}
-                    />
-                  ))}
-                </div>
+                <p className="flex items-center justify-center gap-2">
+                  ❤️ Thank you <span className="font-medium text-blue-400">Redis</span> for powering our backend!
+                </p>
               </motion.div>
             </motion.div>
           </motion.div>

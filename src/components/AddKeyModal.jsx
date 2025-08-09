@@ -237,8 +237,15 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         ...formData,
         token,
         allowed_origins: formData.allowed_origins.filter(origin => origin.trim()),
-        scopes: formData.scopes.filter(scope => scope.trim()),
-        expiry_date: formData.expiry_date ? new Date(formData.expiry_date).toISOString() : null
+        scopes: formData.scopes.filter(scope => scope.trim())
+      }
+      
+      // Only add expiry_date if it's provided and valid
+      if (formData.expiry_date && formData.expiry_date.trim()) {
+        const expiryDate = new Date(formData.expiry_date)
+        if (!isNaN(expiryDate.getTime())) {
+          cleanedFormData.expiry_date = expiryDate.toISOString()
+        }
       }
 
       let response

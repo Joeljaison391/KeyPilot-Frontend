@@ -171,7 +171,7 @@ export const AuthProvider = ({ children }) => {
         try {
           await fetchUserProfile(userId)
         } catch (error) {
-          console.log('Profile fetch failed, continuing with basic login')
+          console.error('error fetching user profile:', error)
         }
         
         return { success: true }

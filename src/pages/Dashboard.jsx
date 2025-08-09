@@ -78,7 +78,7 @@ const Dashboard = () => {
       
       // Ensure all DOM elements are rendered before starting tour
       const tourTimer = setTimeout(() => {
-        console.log('Dashboard: Checking first login for tour')
+        // console.log('Dashboard: Checking first login for tour')
         // Double-check that user is still authenticated before starting tour
         if (isAuthenticated && token) {
           checkFirstLogin()
@@ -97,7 +97,7 @@ const Dashboard = () => {
         setUserApiKeys(response.apiKeys || [])
       }
     } catch (error) {
-      console.error('Failed to fetch API keys:', error)
+      // console.error('Failed to fetch API keys:', error)
       // Don't show error toast for 404 (no keys yet)
       if (error.response?.status !== 404) {
         toast.error('Failed to load API keys')
