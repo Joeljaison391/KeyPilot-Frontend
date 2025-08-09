@@ -7,7 +7,6 @@ const Hero = () => {
   const navigate = useNavigate()
 
   const handleTryDemo = () => {
-    // console.log('Try Demo button clicked - updated!') // Debug log
     navigate('/welcome')
   }
 

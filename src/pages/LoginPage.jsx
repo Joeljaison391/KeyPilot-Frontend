@@ -241,19 +241,19 @@ const LoginPage = () => {
                   >
                     <div className="flex items-center justify-center text-blue-300">
                       <Sparkles className="h-4 w-4 mr-2" />
-                      <span className="text-sm font-medium">Demo Mode Active</span>
+                      <span className="text-sm font-medium">Demo Login</span>
                     </div>
                     <p className="text-xs text-blue-200 mt-1">
                       You'll see the demo guide after login
                     </p>
                   </motion.div>
                 )}
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  {isDemoFlow ? 'Demo Login' : 'Login to KeyPilot'}
-                </h2>
-                <p className="text-gray-400">
-                  {isDemoFlow ? 'Choose a demo user or enter credentials' : 'Access your API management dashboard'}
-                </p>
+                {!isDemoFlow && (
+                  <>
+                    <h2 className="text-2xl font-bold text-white mb-2">Login to KeyPilot</h2>
+                    <p className="text-gray-400">Access your API management dashboard</p>
+                  </>
+                )}
               </motion.div>
 
               {/* Demo Users */}
