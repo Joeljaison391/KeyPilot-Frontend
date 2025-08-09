@@ -34,7 +34,7 @@ import { apiKeysAPI } from '../services/api'
 
 const Dashboard = () => {
   const { user, token, logout, userProfile, fetchUserProfile, isAuthenticated } = useAuth()
-  const { checkFirstLogin } = useTour()
+  const { checkFirstLogin, resetTour } = useTour()
   const navigate = useNavigate()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -49,6 +49,21 @@ const Dashboard = () => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
+
+  // Add keyboard shortcut to reset tour (for development/testing)
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      // Ctrl+Shift+R to reset tour
+      if (event.ctrlKey && event.shiftKey && event.key === 'R') {
+        event.preventDefault()
+        resetTour()
+        toast.success('🎯 Tour reset! Refresh the page to start the tour again.')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [resetTour])
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -267,6 +282,18 @@ const Dashboard = () => {
                 title="Refresh Dashboard"
               >
                 <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                onClick={() => {
+                  resetTour()
+                  toast.success('🎯 Tour reset! Refresh the page to start the tour again.')
+                }}
+                className="p-2 text-gray-400 hover:text-blue-400 transition-colors relative"
+                title="Reset Tour (Dev)"
+              >
+                <Play className="h-5 w-5" />
               </motion.button>
 
               <motion.button
