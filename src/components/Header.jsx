@@ -57,21 +57,13 @@ const Header = () => {
             <a href="#features" className="text-gray-300 hover:text-white transition-colors">
               Features
             </a>
-            <a href="#pricing" className="text-gray-300 hover:text-white transition-colors">
-              Pricing
-            </a>
-            <a href="#docs" className="text-gray-300 hover:text-white transition-colors">
-              Docs
-            </a>
-            <a href="#about" className="text-gray-300 hover:text-white transition-colors">
-              About
-            </a>
+            {/* Removed Pricing, Docs, and About links */}
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <motion.a
-              href="https://github.com"
+              href="https://github.com/Joeljaison391/KeyPilot-Frontend"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.1 }}
@@ -102,15 +94,7 @@ const Header = () => {
               <a href="#features" className="text-gray-300 hover:text-white transition-colors">
                 Features
               </a>
-              <a href="#pricing" className="text-gray-300 hover:text-white transition-colors">
-                Pricing
-              </a>
-              <a href="#docs" className="text-gray-300 hover:text-white transition-colors">
-                Docs
-              </a>
-              <a href="#about" className="text-gray-300 hover:text-white transition-colors">
-                About
-              </a>
+              {/* Removed Pricing, Docs, and About links */}
               <div className="flex flex-col space-y-2 pt-4">
                 <a
                   href="https://github.com"

@@ -1,12 +1,75 @@
-# React + Vite
+# KeyPilot: AI API Gateway & Analytics Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Built for the [Redis AI Challenge 2025](https://dev.to/challenges/redis-2025-07-23)**
 
-Currently, two official plugins are available:
+KeyPilot is a full-stack AI API gateway and analytics platform, combining a modern React frontend (Vite) with a production-grade Express.js backend powered by Redis for semantic caching, intent analytics, and secure API key management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Frontend:** React 18 + Vite (this repo)
+- **Backend:** [KeyPilot Backend](https://github.com/Joeljaison391/KeyPilot) (included as a Git submodule in `/backend`)
+
+---
+
+## 🏆 Redis AI Challenge
+
+This project was built for the [Redis AI Challenge 2025](https://dev.to/challenges/redis-2025-07-23), showcasing advanced use of Redis for semantic caching, analytics, and real-time feedback in AI-powered API platforms.
+
+---
+
+## 📦 Getting Started
+
+### 1. Clone the Repository (with Submodules)
+
+```bash
+git clone --recurse-submodules https://github.com/Joeljaison391/KeyPilot-Frontend.git
+cd KeyPilot-Frontend
+```
+
+If you already cloned without submodules:
+```bash
+git submodule update --init --recursive
+```
+
+### 2. Frontend Setup (Vite + React)
+
+```bash
+cd KeyPilot-Frontend
+npm install
+npm run dev
+# App runs at http://localhost:5173
+```
+
+### 3. Backend Setup (Express.js + Redis)
+
+```bash
+cd backend
+npm install
+# Copy and edit .env.example to .env
+cp .env.example .env
+# Start Redis (Docker recommended)
+docker-compose up -d redis
+# Start backend server
+npm run dev
+# Backend runs at http://localhost:8080
+```
+
+---
+
+## 📂 Repository Layout
+
+- `/src` — React frontend source code
+- `/backend` — Express.js backend (submodule)
+- `/public` — Static assets
+
+---
+
+## 📖 Documentation
+
+- Frontend: See `/src` and in-app tour
+- Backend: See [`/backend/README.md`](./backend/README.md)
+
+---
+

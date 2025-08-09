@@ -156,13 +156,10 @@ const Footer = () => {
               
               <form onSubmit={handleNewsletterSignup} className="space-y-3">
                 <input
-                  type="email"
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
                   required
                 />
                 <motion.button
-                  type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
@@ -180,6 +177,7 @@ const Footer = () => {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.6 }}
           className="pt-8 border-t border-gray-800"
+              // Removed Pricing, API Docs, and About links
         >
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center text-gray-400 text-sm mb-4 md:mb-0">
