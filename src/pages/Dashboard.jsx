@@ -365,7 +365,7 @@ const Dashboard = () => {
             Welcome back, {user?.userId}! 👋
           </h1>
           <p className="text-gray-300 text-lg">
-            Here's your API key management dashboard. Everything is running smoothly.
+            Here's your API key management dashboard. 
           </p>
           
           <div className="mt-4 flex items-center space-x-4">
@@ -851,103 +851,7 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Performance Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6"
-          >
-            <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2 text-green-400" />
-              Performance Analytics
-            </h3>
-            
-            {/* API Response Time Trend */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-300 text-sm">Response Time (Last 24h)</span>
-                <div className="flex items-center space-x-4 text-xs">
-                  <span className="text-green-400">Avg: 247ms</span>
-                  <span className="text-blue-400">Min: 89ms</span>
-                  <span className="text-yellow-400">Max: 1.2s</span>
-                </div>
-              </div>
-              
-              <div className="flex items-end space-x-1 h-24 bg-gray-700/20 rounded-lg p-2">
-                {[0.3, 0.7, 0.4, 0.9, 0.6, 1.0, 0.8, 0.5, 0.7, 0.4, 0.6, 0.3, 0.8, 0.9, 0.5, 0.7, 0.4, 0.6, 0.8, 0.3, 0.5, 0.7, 0.6, 0.4].map((height, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height * 100}%` }}
-                    transition={{ delay: index * 0.05 + 0.8 }}
-                    className="flex-1 bg-gradient-to-t from-green-600/80 to-green-400/80 rounded-sm"
-                  />
-                ))}
-              </div>
-            </div>
 
-            {/* Request Volume */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-300 text-sm">Request Volume (Hourly)</span>
-                <span className="text-blue-400 text-xs">Peak: 156 req/hr</span>
-              </div>
-              
-              <div className="flex items-end space-x-1 h-20 bg-gray-700/20 rounded-lg p-2">
-                {[0.4, 0.3, 0.2, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 0.8, 0.9, 0.7, 0.8, 0.9, 1.0, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.3, 0.4].map((height, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height * 100}%` }}
-                    transition={{ delay: index * 0.03 + 1.2 }}
-                    className="flex-1 bg-gradient-to-t from-blue-600/80 to-blue-400/80 rounded-sm"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Success Rate Donut */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-300 text-sm">Success Rate</span>
-                <span className="text-green-400 text-sm font-medium">98.7%</span>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="relative w-16 h-16">
-                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeDasharray="98.7, 100"
-                      className="text-green-400"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <CheckCircle className="h-6 w-6 text-green-400" />
-                  </div>
-                </div>
-                
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-green-400 text-xs">Successful</span>
-                    <span className="text-green-400 text-xs">1,247</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-red-400 text-xs">Failed</span>
-                    <span className="text-red-400 text-xs">16</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-yellow-400 text-xs">Timeout</span>
-                    <span className="text-yellow-400 text-xs">3</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </main>
 
