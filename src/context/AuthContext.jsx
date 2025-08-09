@@ -127,9 +127,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.getDemoUsers()
       if (response.success) {
+        const allowedIds = new Set(['demo1', 'demo2', 'demo3'])
+        const filteredDemoUsers = Array.isArray(response.demoUsers)
+          ? response.demoUsers.filter((demoUser) => allowedIds.has(demoUser.userId))
+          : []
+
         dispatch({
           type: ACTION_TYPES.SET_DEMO_USERS,
-          payload: response.demoUsers
+          payload: filteredDemoUsers
         })
       }
     } catch (error) {
