@@ -76,26 +76,7 @@ const Stats = () => {
     ],
   }
 
-  // Security Events
-  const securityData = {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-    datasets: [
-      {
-        label: 'Blocked Attempts',
-        data: [12, 8, 15, 6],
-        backgroundColor: 'rgba(239, 68, 68, 0.8)',
-        borderColor: 'rgb(239, 68, 68)',
-        borderWidth: 1,
-      },
-      {
-        label: 'Valid Requests',
-        data: [1250, 1420, 1380, 1560],
-        backgroundColor: 'rgba(34, 197, 94, 0.8)',
-        borderColor: 'rgb(34, 197, 94)',
-        borderWidth: 1,
-      },
-    ],
-  }
+  // Security Events removed
 
   const chartOptions = {
     responsive: true,
@@ -257,21 +238,7 @@ const Stats = () => {
             </div>
           </motion.div>
 
-          {/* Security Events */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="lg:col-span-2 bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-xl p-6"
-          >
-            <div className="flex items-center mb-6">
-              <Shield className="h-6 w-6 text-green-400 mr-3" />
-              <h3 className="text-xl font-semibold text-white">Security Events</h3>
-            </div>
-            <div className="h-64">
-              <Bar data={securityData} options={chartOptions} />
-            </div>
-          </motion.div>
+          {/* Security Events removed */}
         </div>
 
         {/* Real-time Indicators */}
