@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Code, TestTube, BarChart3, Brain, Zap, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import ProxyTester from '../components/ProxyTester'
 import IntentTester from '../components/IntentTester'
 import CacheInspector from '../components/CacheInspector'
@@ -12,7 +12,19 @@ import FeedbackStats from '../components/FeedbackStats'
 function Playground() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [activeTab, setActiveTab] = useState('proxy')
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const tabParam = searchParams.get('tab')
+    
+    const validTabs = ['proxy', 'intent', 'cache', 'trends', 'feedback']
+    
+    if (tabParam && validTabs.includes(tabParam)) {
+      setActiveTab(tabParam)
+    }
+  }, [location.search])
 
   const tabs = [
     {

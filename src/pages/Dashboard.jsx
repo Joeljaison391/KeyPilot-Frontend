@@ -45,7 +45,6 @@ const Dashboard = () => {
   const [userApiKeys, setUserApiKeys] = useState([])
   const [isLoadingKeys, setIsLoadingKeys] = useState(false)
 
-  // Update time every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
@@ -58,7 +57,6 @@ const Dashboard = () => {
     }
     
     if (user?.userId) {
-      // Only fetch data if not already loading to prevent multiple calls
       if (!isLoadingKeys) {
         fetchUserProfile(user.userId)
         fetchUserApiKeys()
@@ -66,9 +64,7 @@ const Dashboard = () => {
     }
   }, [isAuthenticated, user, navigate, fetchUserProfile])
 
-  // Separate effect for tour - only start after initial loading and token is available
   useEffect(() => {
-    // Add more conditions to ensure everything is properly loaded
     if (isAuthenticated && 
         user?.userId && 
         token && 
@@ -76,14 +72,11 @@ const Dashboard = () => {
         userProfile && 
         !isRefreshing) {
       
-      // Ensure all DOM elements are rendered before starting tour
       const tourTimer = setTimeout(() => {
-        // console.log('Dashboard: Checking first login for tour')
-        // Double-check that user is still authenticated before starting tour
         if (isAuthenticated && token) {
           checkFirstLogin()
-        }
-      }, 3000) // Increased to 3 seconds to ensure everything is stable
+        } 
+      }, 3000) 
       
       return () => clearTimeout(tourTimer)
     }
@@ -97,8 +90,6 @@ const Dashboard = () => {
         setUserApiKeys(response.apiKeys || [])
       }
     } catch (error) {
-      // console.error('Failed to fetch API keys:', error)
-      // Don't show error toast for 404 (no keys yet)
       if (error.response?.status !== 404) {
         toast.error('Failed to load API keys')
       }
@@ -158,7 +149,6 @@ const Dashboard = () => {
   const handleDeleteKey = async (key) => {
     if (window.confirm(`Are you sure you want to delete the API key "${key.description}"?`)) {
       try {
-        // Implement delete functionality when API is available
         toast.success('API key deleted successfully!')
         fetchUserApiKeys()
       } catch (error) {
@@ -167,7 +157,6 @@ const Dashboard = () => {
     }
   }
 
-  // Calculate real stats from API keys
   const calculateStats = () => {
     const totalKeys = userApiKeys.length
     const totalDailyUsage = userApiKeys.reduce((sum, key) => sum + (key.usage?.daily_usage || 0), 0)
@@ -182,7 +171,6 @@ const Dashboard = () => {
 
   const stats = calculateStats()
 
-  // Stats data with real values
   const dashboardStats = [
     {
       title: 'Total API Keys',
@@ -412,7 +400,7 @@ const Dashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/playground')}
+              onClick={() => navigate('/playground?tab=proxy')}
               className="p-4 bg-gradient-to-br from-green-500/20 to-blue-500/20 border border-green-500/30 rounded-xl hover:border-green-400/50 transition-all group"
             >
               <div className="flex flex-col items-center text-center">
@@ -425,7 +413,7 @@ const Dashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/playground')}
+              onClick={() => navigate('/playground?tab=intent')}
               className="p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl hover:border-purple-400/50 transition-all group"
             >
               <div className="flex flex-col items-center text-center">
@@ -438,7 +426,7 @@ const Dashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/playground')}
+              onClick={() => navigate('/playground?tab=cache')}
               className="p-4 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-xl hover:border-blue-400/50 transition-all group"
             >
               <div className="flex flex-col items-center text-center">
@@ -451,7 +439,7 @@ const Dashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/playground')}
+              onClick={() => navigate('/playground?tab=trends')}
               className="p-4 bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-xl hover:border-orange-400/50 transition-all group"
             >
               <div className="flex flex-col items-center text-center">
@@ -464,7 +452,7 @@ const Dashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/playground')}
+              onClick={() => navigate('/playground?tab=feedback')}
               className="p-4 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-xl hover:border-yellow-400/50 transition-all group"
             >
               <div className="flex flex-col items-center text-center">
