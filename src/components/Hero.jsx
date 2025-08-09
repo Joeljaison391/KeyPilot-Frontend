@@ -8,11 +8,9 @@ const Hero = () => {
 
   const handleTryDemo = () => {
     // console.log('Try Demo button clicked - updated!') // Debug log
-    toast.success('🚀 Opening demo guide...')
     navigate('/welcome')
   }
 
-  // Quick Login removed; users must use Try Demo
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

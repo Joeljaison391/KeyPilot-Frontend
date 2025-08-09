@@ -8,8 +8,7 @@ const Footer = () => {
 
 
   const handleTryDemo = () => {
-    toast.success('🚀 Redirecting to demo login...')
-    navigate('/login')
+    navigate('/welcome')
   }
 
 
