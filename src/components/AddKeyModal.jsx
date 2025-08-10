@@ -29,7 +29,6 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
     expiry_date: (() => {
       const date = new Date();
       date.setDate(date.getDate() + 1);
-      // Format for datetime-local input: YYYY-MM-DDTHH:MM
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
@@ -76,10 +75,8 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         scopes: editKey.scopes || ['']
       })
     } else {
-             // Reset form for add mode with default expiry date (tomorrow)
        const tomorrow = new Date()
        tomorrow.setDate(tomorrow.getDate() + 1)
-       // Format for datetime-local input: YYYY-MM-DDTHH:MM
        const year = tomorrow.getFullYear();
        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
        const day = String(tomorrow.getDate()).padStart(2, '0');
@@ -155,7 +152,6 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
       ...prev,
       [name]: value
     }))
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -171,13 +167,11 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                             template.description?.toLowerCase().includes('gemini')
     
     if (!isGeminiTemplate) {
-      // Show warning for non-Gemini templates
       setPendingTemplate(template)
       setShowTemplateWarning(true)
       return
     }
     
-    // Allow Gemini template selection
     setSelectedTemplate(template)
     setFormData(prev => ({
       ...prev,
@@ -193,7 +187,6 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
   }
 
   const handleForceSelect = () => {
-    // Allow user to proceed with non-Gemini template if they insist
     if (pendingTemplate) {
       setSelectedTemplate(pendingTemplate)
       setFormData(prev => ({

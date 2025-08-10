@@ -105,8 +105,6 @@ const Dashboard = () => {
         setUserApiKeys(response.apiKeys || [])
       }
     } catch (error) {
-      // console.error('Failed to fetch API keys:', error)
-      // Don't show error toast for 404 (no keys yet)
       if (error.response?.status !== 404) {
         toast.error('Failed to load API keys')
       }

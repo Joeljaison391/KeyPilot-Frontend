@@ -7,7 +7,7 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Start with loading true to prevent race conditions
   demoUsers: [],
   userProfile: null,
   error: null
@@ -118,7 +118,12 @@ export const AuthProvider = ({ children }) => {
         console.error('Error parsing saved user data:', error)
         localStorage.removeItem('keypilot_token')
         localStorage.removeItem('keypilot_user')
+        // Set loading to false if there's an error
+        dispatch({ type: ACTION_TYPES.SET_LOADING, payload: false })
       }
+    } else {
+      // No saved auth data, set loading to false
+      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: false })
     }
   }, [])
 

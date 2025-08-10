@@ -57,7 +57,6 @@ const Header = () => {
             <a href="#features" className="text-gray-300 hover:text-white transition-colors">
               Features
             </a>
-            {/* Removed Pricing, Docs, and About links */}
           </nav>
 
           {/* Desktop Actions */}
