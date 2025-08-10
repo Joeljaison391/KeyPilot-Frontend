@@ -76,10 +76,6 @@ const Hero = () => {
             className="flex flex-wrap justify-center gap-4 mb-12"
           >
             <div className="flex items-center px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-full">
-              <Shield className="h-4 w-4 text-blue-400 mr-2" />
-              <span className="text-sm text-gray-300">Enterprise Security</span>
-            </div>
-            <div className="flex items-center px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-full">
               <Zap className="h-4 w-4 text-yellow-400 mr-2" />
               <span className="text-sm text-gray-300">Sub-ms Latency</span>
             </div>
