@@ -53,11 +53,6 @@ const Header = () => {
           </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-300 hover:text-white transition-colors">
-              Features
-            </a>
-          </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
@@ -90,13 +85,9 @@ const Header = () => {
             className="md:hidden mt-4 py-4 border-t border-gray-700"
           >
             <nav className="flex flex-col space-y-4">
-              <a href="#features" className="text-gray-300 hover:text-white transition-colors">
-                Features
-              </a>
-              {/* Removed Pricing, Docs, and About links */}
               <div className="flex flex-col space-y-2 pt-4">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/Joeljaison391/KeyPilot-Frontend"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-4 py-2 text-gray-400 hover:text-white transition-colors text-center"
