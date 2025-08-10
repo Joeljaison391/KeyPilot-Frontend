@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Copy, Download, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
@@ -14,6 +14,7 @@ console.log('- BASE_URL resolved to:', BASE_URL)
 function ProxyTester() {
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
+  const activeRequestRef = useRef(null) // Track active requests to prevent duplicates
   const [request, setRequest] = useState({
     intent: 'generate a creative story about AI learning to paint',
     payload: {
@@ -25,6 +26,11 @@ function ProxyTester() {
   })
   const [response, setResponse] = useState(null)
   const [selectedTemplate, setSelectedTemplate] = useState('gemini')
+  const [payloadText, setPayloadText] = useState(JSON.stringify({
+    prompt: 'Write a creative story about an AI learning to paint',
+    max_tokens: 500,
+    temperature: 0.7
+  }, null, 2)) // Separate state for payload text
 
   const templates = {
     gemini: {
@@ -62,24 +68,59 @@ function ProxyTester() {
   const handleTemplateChange = (templateId) => {
     setSelectedTemplate(templateId)
     const template = templates[templateId]
-    setRequest({
+    const newRequest = {
       ...request,
       intent: template.intent,
       payload: template.payload
-    })
+    }
+    setRequest(newRequest)
+    setPayloadText(JSON.stringify(template.payload, null, 2)) // Update payload text state
   }
 
   const handleTest = async () => {
+    // Add unique request ID for tracking
+    const requestId = Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+    console.log(`🆔 ProxyTester - Request ID: ${requestId}`)
+    
     if (!token) {
       toast.error('No authentication token available')
       return
     }
 
-    setLoading(true)
+    // Check if there's already an active request using ref
+    if (activeRequestRef.current) {
+      console.log(`⚠️ ProxyTester - [${requestId}] Active request already exists (${activeRequestRef.current}), ignoring duplicate`)
+      return
+    }
+
+    // Prevent duplicate requests if already loading
+    if (loading) {
+      console.log(`⚠️ ProxyTester - [${requestId}] Loading state is true, ignoring duplicate`)
+      return
+    }
+
+    // Set this request as the active one
+    activeRequestRef.current = requestId
+    console.log(`🔒 ProxyTester - [${requestId}] Set as active request`)
+
+    // Validate payload JSON before sending
     try {
-      console.log('ProxyTester - BASE_URL:', BASE_URL)
-      console.log('ProxyTester - token:', token)
-      console.log('ProxyTester - VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
+      JSON.parse(payloadText) // Validate the current payload text
+    } catch (error) {
+      console.log(`❌ ProxyTester - [${requestId}] JSON validation failed:`, error)
+      activeRequestRef.current = null // Clear active request on error
+      toast.error('Invalid JSON in payload. Please fix the syntax before testing.')
+      return
+    }
+
+    setLoading(true)
+    console.log(`🚀 ProxyTester - [${requestId}] Starting API test...`)
+    
+    try {
+      console.log(`- [${requestId}] BASE_URL:`, BASE_URL)
+      console.log(`- [${requestId}] Token:`, token?.substring(0, 8) + '...')
+      console.log(`- [${requestId}] Current request state:`, request)
+      console.log(`- [${requestId}] Current payloadText:`, payloadText)
       
       const requestBody = {
         token: token, // Add token to request body
@@ -88,8 +129,10 @@ function ProxyTester() {
         origin: request.origin
       }
       
-      console.log('ProxyTester - requestBody:', requestBody)
+      console.log(`📤 ProxyTester - [${requestId}] Final request body being sent:`, requestBody)
+      console.log(`📦 ProxyTester - [${requestId}] Payload specifically:`, requestBody.payload)
 
+      console.log(`🚀 ProxyTester - [${requestId}] Starting fetch request to:`, `${BASE_URL}/api/proxy`)
       const response = await fetch(`${BASE_URL}/api/proxy`, {
         method: 'POST',
         headers: {
@@ -99,7 +142,10 @@ function ProxyTester() {
         body: JSON.stringify(requestBody)
       })
 
+      console.log(`📡 ProxyTester - [${requestId}] Fetch completed with status:`, response.status)
       const data = await response.json()
+      console.log(`📋 ProxyTester - [${requestId}] Response data:`, data)
+      
       setResponse({
         status: response.status,
         data,
@@ -107,12 +153,14 @@ function ProxyTester() {
       })
 
       if (response.ok) {
+        console.log(`✅ ProxyTester - [${requestId}] Request successful`)
         toast.success('Request successful! 🎉')
       } else {
+        console.log(`❌ ProxyTester - [${requestId}] Request failed with status:`, response.status, 'Data:', data)
         toast.error('Request failed - check response details')
       }
     } catch (error) {
-      console.error('Proxy test error:', error)
+      console.error(`💥 ProxyTester - [${requestId}] Catch block error:`, error)
       setResponse({
         status: 'error',
         data: { error: error.message },
@@ -120,6 +168,8 @@ function ProxyTester() {
       })
       toast.error('Failed to connect to proxy endpoint')
     } finally {
+      console.log(`🏁 ProxyTester - [${requestId}] Finally block - clearing active request and setting loading to false`)
+      activeRequestRef.current = null // Clear the active request
       setLoading(false)
     }
   }
@@ -207,19 +257,40 @@ function ProxyTester() {
                 Payload
               </label>
               <textarea
-                value={JSON.stringify(request.payload, null, 2)}
+                value={payloadText}
                 onChange={(e) => {
+                  const newText = e.target.value
+                  setPayloadText(newText) // Always update the text
+                  
                   try {
-                    const payload = JSON.parse(e.target.value)
-                    setRequest({ ...request, payload })
+                    const payload = JSON.parse(newText)
+                    console.log('💾 ProxyTester - Updating payload:', payload)
+                    setRequest(prevRequest => ({ ...prevRequest, payload })) // Use functional update
                   } catch (error) {
-                    // Invalid JSON, keep the text as is
+                    // Keep the invalid JSON in the text area, don't update request.payload
+                    // This allows users to continue editing without losing their changes
+                  }
+                }}
+                onBlur={() => {
+                  // On blur, try to format the JSON if it's valid
+                  try {
+                    const payload = JSON.parse(payloadText)
+                    const formattedText = JSON.stringify(payload, null, 2)
+                    setPayloadText(formattedText)
+                    console.log('✅ ProxyTester - Payload formatted and updated on blur:', payload)
+                    setRequest(prevRequest => ({ ...prevRequest, payload })) // Use functional update
+                  } catch (error) {
+                    // If invalid JSON on blur, keep the current text
+                    console.warn('⚠️ Invalid JSON in payload:', error.message)
                   }
                 }}
                 className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono text-sm"
                 rows={8}
                 placeholder="JSON payload for the API..."
               />
+              <div className="mt-1 text-xs text-gray-400">
+                Edit the JSON payload. It will be validated when you finish editing.
+              </div>
             </div>
 
             <div>
@@ -261,7 +332,7 @@ function ProxyTester() {
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
           <h3 className="text-lg font-semibold text-white mb-4">cURL Command</h3>
           <div className="relative">
-            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto thin-scrollbar">
+            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto">
               {generateCurl()}
             </pre>
             <button
@@ -371,7 +442,7 @@ function ProxyTester() {
           {/* Raw Response */}
           <div>
             <h4 className="text-sm font-medium text-gray-300 mb-2">Raw Response</h4>
-            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96 custom-scrollbar">
+            <pre className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 text-sm text-gray-300 overflow-x-auto max-h-96">
               {JSON.stringify(response.data, null, 2)}
             </pre>
           </div>
