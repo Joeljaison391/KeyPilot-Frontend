@@ -41,14 +41,42 @@ const LoginPage = () => {
   const isDemoFlow = new URLSearchParams(location.search).get('demo') === 'true'
 
   const checkBackendConnection = async () => {
-    const isConnected = await api.testConnection()
-    setBackendStatus(isConnected)
+    try {
+      // Set a shorter timeout for faster detection of cold start
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+      
+      const isConnected = await api.testConnection()
+      clearTimeout(timeoutId)
+      setBackendStatus(isConnected)
+    } catch (error) {
+      // If timeout or connection fails, treat as cold start
+      setBackendStatus(false)
+    }
   }
 
   // Check backend connection on mount
   useEffect(() => {
     checkBackendConnection()
   }, [])
+
+  // Auto-refresh backend status when offline
+  useEffect(() => {
+    let intervalId = null
+    
+    if (backendStatus === false) {
+      // More aggressive checking during cold start - every 5 seconds
+      intervalId = setInterval(() => {
+        checkBackendConnection()
+      }, 5000)
+    }
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [backendStatus])
 
   // Clear errors when component mounts
   useEffect(() => {
@@ -248,15 +276,36 @@ const LoginPage = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-3 p-3 bg-orange-500/20 border border-orange-500/30 rounded-lg"
+                  className="mt-3 p-4 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-lg"
                 >
                   <div className="flex items-start">
-                    <AlertCircle className="h-5 w-5 text-orange-400 mr-2 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-orange-300">
-                      <p className="font-medium mb-1">Backend server is not running</p>
-                      <p className="text-xs opacity-90">
-                        Make sure your Redis backend is running before attempting to login.
-                      </p>
+                      <p className="font-medium mb-2">🚀 Backend is starting up...</p>
+                      <div className="space-y-2 text-xs opacity-90">
+                        <p>
+                          Our backend is hosted on <span className="font-semibold text-blue-300">Render.com</span> (free tier). 
+                          Due to cost constraints, the service goes offline after 15 minutes of inactivity.
+                        </p>
+                        <p>
+                          <span className="font-semibold">⏱️ Cold start time:</span> 30-60 seconds
+                        </p>
+                        <p className="text-yellow-300">
+                          💡 <span className="font-medium">Please wait patiently</span> - the backend is automatically waking up!
+                        </p>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center text-blue-300">
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400 mr-2"></div>
+                            <span className="text-xs">Auto-refreshing every 5s...</span>
+                          </div>
+                          <button
+                            onClick={checkBackendConnection}
+                            className="text-xs text-blue-400 hover:text-blue-300 transition-colors underline"
+                          >
+                            Check now
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

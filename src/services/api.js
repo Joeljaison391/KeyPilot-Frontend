@@ -155,14 +155,22 @@ export const api = {
   // Test connection
   testConnection: async () => {
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
       return response.ok
     } catch (error) {
+      // Handle both network errors and timeouts
+      console.log('Backend connection test failed:', error.message)
       return false
     }
   }
