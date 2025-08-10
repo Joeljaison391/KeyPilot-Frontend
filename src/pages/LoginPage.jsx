@@ -34,20 +34,11 @@ const LoginPage = () => {
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [selectedDemo, setSelectedDemo] = useState(null)
   const [backendStatus, setBackendStatus] = useState(null)
   const [isGeneratingDemo, setIsGeneratingDemo] = useState(false)
-  const [showCredentialsInfo, setShowCredentialsInfo] = useState(false)
   
   // Check if this is a demo login flow
   const isDemoFlow = new URLSearchParams(location.search).get('demo') === 'true'
-  
-  // Demo credentials mapping
-  const demoCredentials = {
-    demo1: { userId: 'demo1', password: 'pass1' },
-    demo2: { userId: 'demo2', password: 'pass2' },
-    demo3: { userId: 'demo3', password: 'pass3' }
-  }
 
   const checkBackendConnection = async () => {
     const isConnected = await api.testConnection()
@@ -118,8 +109,6 @@ const LoginPage = () => {
       userId: demoUserId,
       password: demoPassword
     })
-    
-    setSelectedDemo(null)
     
     toast.success(`🎲 Generated demo credentials: ${demoUserId}`)
     
@@ -294,36 +283,12 @@ const LoginPage = () => {
                  )}
                </motion.div>
 
-              {/* Demo Users */}
-              {demoUsers.length > 0 && (
-                <motion.div variants={itemVariants} className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Quick Demo Access:</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {demoUsers.map((demoUser) => (
-                      <motion.button
-                        key={demoUser.userId}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleDemoSelect(demoUser)}
-                        className={`p-3 border rounded-lg transition-all duration-200 ${
-                          selectedDemo === demoUser.userId
-                            ? 'border-blue-500 bg-blue-500/20 text-blue-300'
-                            : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-gray-500'
-                        }`}
-                      >
-                        <User className="h-5 w-5 mx-auto mb-1" />
-                        <div className="text-xs font-semibold">{demoUser.userId}</div>
-                        <div className="text-xs opacity-75">{demoUser.passwordHint}</div>
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
 
-                                            {/* Login Form */}
+
+               {/* Login Form */}
                <motion.form variants={itemVariants} onSubmit={handleSubmit} className="space-y-6">
                 
-                                 {/* User ID Field */}
+                {/* User ID Field */}
                  <div>
                    <div className="flex items-center justify-between mb-2">
                      <label className="block text-sm font-medium text-gray-300">
