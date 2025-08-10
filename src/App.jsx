@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider } from './context/AuthContext'
 import { ConsentProvider } from './context/ConsentContext'
 import { TourProvider } from './context/TourContext'
@@ -91,6 +92,7 @@ function App() {
       <TourProvider>
         <ApiKeyTutorialProvider>
           <AppContent />
+          <Analytics />
         </ApiKeyTutorialProvider>
       </TourProvider>
     </ConsentProvider>
