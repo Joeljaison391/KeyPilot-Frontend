@@ -208,7 +208,7 @@ const LoginPage = () => {
                 Welcome to the Demo
               </h1>
               <p className="text-xl text-gray-300 leading-relaxed">
-                Experience Redis-powered API key management with semantic routing and enterprise security.
+                Experience Redis-powered API key management with semantic routing.
               </p>
             </motion.div>
 
