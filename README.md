@@ -1,10 +1,9 @@
-<div style="display: flex; align-items: center; margin-bottom: 20px;">
-  <img src="src/assets/logo.png" alt="KeyPilot Logo" width="60" height="60" style="margin-right: 15px;">
-  <div>
-    <h1 style="margin: 0 0 10px 0;">KeyPilot – Semantic API Gateway with Real‑Time AI Routing & Caching</h1>
-    <p style="margin: 0; font-size: 1.1em; color: #666;">One request, one intent—and KeyPilot routes to the right provider automatically. No key juggling. No endpoint guessing. Faster builds, lower cost.</p>
-  </div>
-</div>
+<h1 style="display: flex; align-items: center;">
+  <img src="src/assets/logo.png" alt="KeyPilot Logo" width="48" height="48" style="margin-right: 8px;">
+  <span>KeyPilot – Semantic API Gateway with Caching</span>
+</h1>
+
+One request, one intent—and KeyPilot routes to the right provider automatically. No key juggling. No endpoint guessing. Faster builds, lower cost.  
 
 — Built for the [Redis AI Challenge 2025](https://dev.to/challenges/redis-2025-07-23)
 
