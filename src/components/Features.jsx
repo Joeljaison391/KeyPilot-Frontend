@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import { 
-  Shield, 
   Zap, 
   Database, 
   Key, 
@@ -29,13 +28,6 @@ const Features = () => {
       description: "Describe your intent and let AI automatically select the right API key based on semantic matching.",
       color: "from-blue-500 to-cyan-500",
       highlights: ["Intent-Based", "Auto-Selection", "Smart Routing"]
-    },
-    {
-      icon: Shield,
-      title: "Enterprise Security",
-      description: "256-bit encryption, secure token generation, and session-based authentication with TTL management.",
-      color: "from-green-500 to-emerald-500",
-      highlights: ["256-bit Encryption", "Session Control", "Access Management"]
     },
     {
       icon: Key,
