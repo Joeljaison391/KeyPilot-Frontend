@@ -17,7 +17,8 @@ import {
   AlertCircle,
   Wifi,
   WifiOff,
-  Zap
+  Zap,
+  Info
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '../services/api'
@@ -35,6 +36,7 @@ const LoginPage = () => {
   const [selectedDemo, setSelectedDemo] = useState(null)
   const [backendStatus, setBackendStatus] = useState(null)
   const [isGeneratingDemo, setIsGeneratingDemo] = useState(false)
+  const [showCredentialsInfo, setShowCredentialsInfo] = useState(false)
   
   // Check if this is a demo login flow
   const isDemoFlow = new URLSearchParams(location.search).get('demo') === 'true'
@@ -78,6 +80,27 @@ const LoginPage = () => {
     })
     setSelectedDemo(demoUser.userId)
     toast.success(`🎯 Demo user ${demoUser.userId} selected!`)
+  }
+
+  const showDemoCredentialsInfo = () => {
+    toast.success(
+      '🎲 Demo Credentials Pattern:\n\n' +
+      '• Username: demo001 to demo999\n' +
+      '• Password: pass001 to pass999\n\n' +
+      'Example: demo123 / pass123',
+      {
+        duration: 6000,
+        style: {
+          background: '#1f2937',
+          color: '#d1d5db',
+          border: '1px solid #374151',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '1.5',
+          whiteSpace: 'pre-line'
+        }
+      }
+    )
   }
 
   const generateRandomDemoCredentials = () => {
@@ -324,24 +347,36 @@ const LoginPage = () => {
               {/* Login Form */}
               <motion.form variants={itemVariants} onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* User ID Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    User ID
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="userId"
-                      value={formData.userId}
-                      onChange={handleInputChange}
-                      placeholder="Enter user ID (e.g., demo1)"
-                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                      required
-                    />
-                    <User className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                  </div>
-                </div>
+                                 {/* User ID Field */}
+                 <div>
+                   <div className="flex items-center justify-between mb-2">
+                     <label className="block text-sm font-medium text-gray-300">
+                       User ID
+                     </label>
+                     {isDemoFlow && (
+                       <button
+                         type="button"
+                         onClick={showDemoCredentialsInfo}
+                         className="flex items-center text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                       >
+                         <Info className="h-3 w-3 mr-1" />
+                         Demo Pattern
+                       </button>
+                     )}
+                   </div>
+                   <div className="relative">
+                     <input
+                       type="text"
+                       name="userId"
+                       value={formData.userId}
+                       onChange={handleInputChange}
+                       placeholder="Enter user ID (e.g., demo1)"
+                       className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                       required
+                     />
+                     <User className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+                   </div>
+                 </div>
 
                 {/* Password Field */}
                 <div>
