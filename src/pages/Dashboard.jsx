@@ -922,7 +922,7 @@ const Dashboard = () => {
             </div>
 
             {/* Token Usage Summary */}
-            {analyticsData?.token_usage && (
+            {/* {analyticsData?.token_usage && (
               <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
                 <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
                   <Zap className="h-5 w-5 mr-2 text-amber-400" />
@@ -965,7 +965,6 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Weekly Token Usage Trend */}
                 {analyticsData.token_usage.weekly_usage?.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
@@ -1000,7 +999,7 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-            )}
+            )} */}
 
 
 
@@ -1204,103 +1203,85 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Performance Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6"
-          >
-            <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2 text-green-400" />
-              Performance Analytics
-            </h3>
-            
-            {/* API Response Time Trend */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-300 text-sm">Response Time (Last 24h)</span>
-                <div className="flex items-center space-x-4 text-xs">
-                  <span className="text-green-400">Avg: 247ms</span>
-                  <span className="text-blue-400">Min: 89ms</span>
-                  <span className="text-yellow-400">Max: 1.2s</span>
-                </div>
-              </div>
-              
-              <div className="flex items-end space-x-1 h-24 bg-gray-700/20 rounded-lg p-2">
-                {[0.3, 0.7, 0.4, 0.9, 0.6, 1.0, 0.8, 0.5, 0.7, 0.4, 0.6, 0.3, 0.8, 0.9, 0.5, 0.7, 0.4, 0.6, 0.8, 0.3, 0.5, 0.7, 0.6, 0.4].map((height, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height * 100}%` }}
-                    transition={{ delay: index * 0.05 + 0.8 }}
-                    className="flex-1 bg-gradient-to-t from-green-600/80 to-green-400/80 rounded-sm"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Request Volume */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-300 text-sm">Request Volume (Hourly)</span>
-                <span className="text-blue-400 text-xs">Peak: 156 req/hr</span>
-              </div>
-              
-              <div className="flex items-end space-x-1 h-20 bg-gray-700/20 rounded-lg p-2">
-                {[0.4, 0.3, 0.2, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 0.8, 0.9, 0.7, 0.8, 0.9, 1.0, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.3, 0.4].map((height, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height * 100}%` }}
-                    transition={{ delay: index * 0.03 + 1.2 }}
-                    className="flex-1 bg-gradient-to-t from-blue-600/80 to-blue-400/80 rounded-sm"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Success Rate Donut */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-300 text-sm">Success Rate</span>
-                <span className="text-green-400 text-sm font-medium">98.7%</span>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="relative w-16 h-16">
-                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeDasharray="98.7, 100"
-                      className="text-green-400"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <CheckCircle className="h-6 w-6 text-green-400" />
-                  </div>
-                </div>
+          {/* Token Usage Summary */}
+            {analyticsData?.token_usage && (
+              <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
+                  <Zap className="h-5 w-5 mr-2 text-amber-400" />
+                  Token Usage Summary
+                </h3>
                 
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-green-400 text-xs">Successful</span>
-                    <span className="text-green-400 text-xs">1,247</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-amber-400 mb-1">
+                      {analyticsData.token_usage.total_tokens_used?.toLocaleString() || 0}
+                    </div>
+                    <div className="text-xs text-gray-400">Total Tokens Used</div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-red-400 text-xs">Failed</span>
-                    <span className="text-red-400 text-xs">16</span>
+                  
+                  <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-400 mb-1">
+                      {analyticsData.token_usage.average_tokens_per_request || 0}
+                    </div>
+                    <div className="text-xs text-gray-400">Avg per Request</div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-yellow-400 text-xs">Timeout</span>
-                    <span className="text-yellow-400 text-xs">3</span>
+                  
+                  <div className="bg-green-900/20 border border-green-700/30 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-400 mb-1">
+                      {analyticsData.token_usage.daily_usage?.length > 0 
+                        ? analyticsData.token_usage.daily_usage[analyticsData.token_usage.daily_usage.length - 1]?.tokens?.toLocaleString() || 0
+                        : 0
+                      }
+                    </div>
+                    <div className="text-xs text-gray-400">Today's Usage</div>
+                  </div>
+                  
+                  <div className="bg-purple-900/20 border border-purple-700/30 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-400 mb-1">
+                      {analyticsData.token_usage.weekly_usage?.length > 0 
+                        ? analyticsData.token_usage.weekly_usage[analyticsData.token_usage.weekly_usage.length - 1]?.tokens?.toLocaleString() || 0
+                        : 0
+                      }
+                    </div>
+                    <div className="text-xs text-gray-400">This Week</div>
                   </div>
                 </div>
+
+                {analyticsData.token_usage.weekly_usage?.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-gray-300 text-sm">Weekly Token Trend</span>
+                      <span className="text-amber-400 text-sm">
+                        {analyticsData.token_usage.weekly_usage.length} weeks
+                      </span>
+                    </div>
+                    <div className="flex items-end space-x-2 h-16">
+                      {analyticsData.token_usage.weekly_usage.map((week, index) => {
+                        const maxTokens = Math.max(...analyticsData.token_usage.weekly_usage.map(w => w.tokens))
+                        const height = maxTokens > 0 ? (week.tokens / maxTokens) * 100 : 0
+                        return (
+                          <motion.div
+                            key={index}
+                            initial={{ height: 0 }}
+                            animate={{ height: `${height}%` }}
+                            transition={{ delay: index * 0.2 }}
+                            className="flex-1 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+                            title={`Week ${week.week}: ${week.tokens.toLocaleString()} tokens`}
+                          />
+                        )
+                      })}
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-400 mt-2">
+                      {analyticsData.token_usage.weekly_usage.map((week) => (
+                        <span key={week.week}>
+                          {new Date(week.week).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          </motion.div>
+            )}
         </div>
       </main>
 
