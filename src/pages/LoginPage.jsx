@@ -285,7 +285,7 @@ const LoginPage = () => {
               
                              {/* Form Header */}
                <motion.div variants={itemVariants} className="text-center mb-8">
-                 {!isDemoFlow && (
+                 {(
                    <>
                      <h2 className="text-2xl font-bold text-white mb-2">Login to KeyPilot</h2>
                      <p className="text-gray-400">Access your API management dashboard</p>
@@ -319,33 +319,8 @@ const LoginPage = () => {
                 </motion.div>
               )}
 
-                             {/* Random Demo Credentials Generator */}
-               {isDemoFlow && (
-                 <motion.div variants={itemVariants} className="mb-6">
-                   <motion.button
-                     onClick={generateRandomDemoCredentials}
-                     disabled={isGeneratingDemo || isLoading}
-                     whileHover={{ scale: isGeneratingDemo || isLoading ? 1 : 1.02 }}
-                     whileTap={{ scale: isGeneratingDemo || isLoading ? 1 : 0.98 }}
-                     className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                   >
-                     {isGeneratingDemo ? (
-                       <>
-                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                         Generating...
-                       </>
-                     ) : (
-                       <>
-                         <Sparkles className="h-5 w-5 mr-2" />
-                         Generate Demo Credentials & Login
-                       </>
-                     )}
-                   </motion.button>
-                 </motion.div>
-               )}
-
-              {/* Login Form */}
-              <motion.form variants={itemVariants} onSubmit={handleSubmit} className="space-y-6">
+                                            {/* Login Form */}
+               <motion.form variants={itemVariants} onSubmit={handleSubmit} className="space-y-6">
                 
                                  {/* User ID Field */}
                  <div>
@@ -415,27 +390,60 @@ const LoginPage = () => {
                   </motion.div>
                 )}
 
-                {/* Submit Button */}
-                <motion.button
-                  type="submit"
-                  disabled={isLoading}
-                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                  className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Signing In...
-                    </>
-                  ) : (
-                    <>
-                      <LogIn className="h-5 w-5 mr-2" />
-                      Sign In to Dashboard
-                    </>
-                  )}
-                </motion.button>
-              </motion.form>
+                                 {/* Submit Button */}
+                 <motion.button
+                   type="submit"
+                   disabled={isLoading}
+                   whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                   whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                   className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
+                 >
+                   {isLoading ? (
+                     <>
+                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                       Signing In...
+                     </>
+                   ) : (
+                     <>
+                       <LogIn className="h-5 w-5 mr-2" />
+                       Sign In to Dashboard
+                     </>
+                   )}
+                 </motion.button>
+               </motion.form>
+
+               {/* OR Separator and Generate Demo Button */}
+               {isDemoFlow && (
+                 <>
+                   <div className="flex items-center my-4">
+                     <div className="flex-1 border-t border-gray-600"></div>
+                     <span className="px-4 text-sm text-gray-400">OR</span>
+                     <div className="flex-1 border-t border-gray-600"></div>
+                   </div>
+                   
+                   <motion.div variants={itemVariants}>
+                     <motion.button
+                       onClick={generateRandomDemoCredentials}
+                       disabled={isGeneratingDemo || isLoading}
+                       whileHover={{ scale: isGeneratingDemo || isLoading ? 1 : 1.02 }}
+                       whileTap={{ scale: isGeneratingDemo || isLoading ? 1 : 0.98 }}
+                       className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                     >
+                       {isGeneratingDemo ? (
+                         <>
+                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                           Generating...
+                         </>
+                       ) : (
+                         <>
+                           <Sparkles className="h-5 w-5 mr-2" />
+                           Generate Demo Credentials & Login
+                         </>
+                       )}
+                     </motion.button>
+                   </motion.div>
+                 </>
+               )}
 
               {/* Additional Info */}
               <motion.div variants={itemVariants} className="mt-6 text-center">
