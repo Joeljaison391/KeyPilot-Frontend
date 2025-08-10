@@ -227,22 +227,32 @@ const Dashboard = () => {
     }
   }
 
-  // Calculate real stats from API keys
+  // Calculate real stats from analytics data and API keys
   const calculateStats = () => {
     const totalKeys = userApiKeys.length
-    const totalDailyUsage = userApiKeys.reduce((sum, key) => sum + (key.usage?.daily_usage || 0), 0)
-    const totalDailyTokens = userApiKeys.reduce((sum, key) => sum + (key.usage?.daily_tokens_used || 0), 0)
+    
+    // Get daily requests from analytics data
+    const totalDailyRequests = analyticsData?.request_status_summary?.total_requests || 0
+    
+    // Get daily tokens from analytics data
+    const totalDailyTokens = analyticsData?.token_usage?.daily_usage?.length > 0 
+      ? analyticsData.token_usage.daily_usage[analyticsData.token_usage.daily_usage.length - 1]?.tokens || 0
+      : 0
+    
+    // Get success rate from analytics data
+    const successRate = analyticsData?.request_status_summary?.success_rate || 0
     
     return {
       totalKeys,
-      totalDailyUsage,
-      totalDailyTokens
+      totalDailyRequests,
+      totalDailyTokens,
+      successRate
     }
   }
 
   const stats = calculateStats()
 
-  // Stats data with real values
+  // Stats data with real values from analytics
   const dashboardStats = [
     {
       title: 'Total API Keys',
@@ -254,7 +264,7 @@ const Dashboard = () => {
     },
     {
       title: 'Daily Requests',
-      value: stats.totalDailyUsage.toLocaleString(),
+      value: stats.totalDailyRequests.toLocaleString(),
       icon: Activity,
       color: 'text-green-400',
       bgColor: 'bg-green-500/20',
@@ -270,7 +280,7 @@ const Dashboard = () => {
     },
     {
       title: 'Success Rate',
-      value: '99.9%',
+      value: `${stats.successRate.toFixed(1)}%`,
       icon: CheckCircle,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/20',
@@ -631,24 +641,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <p className="text-gray-300 text-sm mb-3">{apiKey.description}</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
-                      <div className="text-center">
-                        <p className="text-xs text-gray-400">Daily Usage</p>
-                        <p className="text-sm font-medium text-white">{apiKey.usage?.daily_usage || 0}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-400">Weekly Usage</p>
-                        <p className="text-sm font-medium text-white">{apiKey.usage?.weekly_usage || 0}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-400">Daily Tokens</p>
-                        <p className="text-sm font-medium text-white">{apiKey.usage?.daily_tokens_used || 0}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-400">Limit</p>
-                        <p className="text-sm font-medium text-white">{apiKey.limits?.max_requests_per_day || 'N/A'}</p>
-                      </div>
-                    </div>
+
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-400">
                         Created: {new Date(apiKey.created_at).toLocaleDateString()}
