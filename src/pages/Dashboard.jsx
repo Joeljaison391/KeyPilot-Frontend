@@ -51,6 +51,7 @@ const Dashboard = () => {
   const [analyticsData, setAnalyticsData] = useState(null)
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false)
   const [analyticsPeriod, setAnalyticsPeriod] = useState(7) // Default 7 days
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   // Update time every second
   useEffect(() => {
@@ -59,7 +60,8 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isLoggingOut) {
+      // Only navigate to login if we're not in the process of logging out
       navigate('/login')
       return
     }
@@ -72,7 +74,7 @@ const Dashboard = () => {
         fetchAnalytics() // Add analytics fetching
       }
     }
-  }, [isAuthenticated, user, navigate, fetchUserProfile])
+  }, [isAuthenticated, user, navigate, fetchUserProfile, isLoggingOut])
 
   // Separate effect for tour - only start after initial loading and token is available
   useEffect(() => {
@@ -114,6 +116,7 @@ const Dashboard = () => {
   }
 
   const handleLogout = async () => {
+    setIsLoggingOut(true)
     await logout()
     if (user?.userId && user.userId.startsWith('demo')) {
       navigate('/login?demo=true')

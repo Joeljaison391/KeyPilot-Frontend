@@ -18,7 +18,8 @@ import {
   Wifi,
   WifiOff,
   Zap,
-  Info
+  Info,
+  Play
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '../services/api'
@@ -411,6 +412,30 @@ const LoginPage = () => {
                    )}
                  </motion.button>
                </motion.form>
+
+               {/* Demo Button for non-demo flows */}
+               {!isDemoFlow && (
+                 <>
+                   <div className="flex items-center my-4">
+                     <div className="flex-1 border-t border-gray-600"></div>
+                     <span className="px-4 text-sm text-gray-400">OR</span>
+                     <div className="flex-1 border-t border-gray-600"></div>
+                   </div>
+                   
+                   <motion.div variants={itemVariants}>
+                     <motion.button
+                       onClick={() => navigate('/login?demo=true')}
+                       disabled={isLoading}
+                       whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                       whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                       className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                     >
+                       <Play className="h-5 w-5 mr-2" />
+                       Try Demo Mode
+                     </motion.button>
+                   </motion.div>
+                 </>
+               )}
 
                {/* OR Separator and Generate Demo Button */}
                {isDemoFlow && (
