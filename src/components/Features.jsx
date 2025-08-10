@@ -49,6 +49,13 @@ const Features = () => {
       description: "Redis-powered caching system for frequently used API responses with smart invalidation.",
       color: "from-pink-500 to-rose-500",
       highlights: ["Smart Caching", "Auto-Invalidation", "Response Optimization"]
+    },
+    {
+      icon: TrendingUp,
+      title: "Real-time Monitoring",
+      description: "Comprehensive monitoring of API performance, usage patterns, and system health with detailed insights.",
+      color: "from-emerald-500 to-teal-500",
+      highlights: ["Performance Tracking", "Usage Analytics", "Health Monitoring"]
     }
   ]
 
