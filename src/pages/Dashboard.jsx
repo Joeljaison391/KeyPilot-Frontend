@@ -273,16 +273,7 @@ const Dashboard = () => {
     }
   ]
 
-  const quickActions = [
-    { name: 'Add API Key', icon: Plus, color: 'bg-blue-500', onClick: () => {
-      setIsEditMode(false)
-      setEditingKey(null)
-      setShowAddKeyModal(true)
-    }},
-    { name: 'View Analytics', icon: BarChart3, color: 'bg-green-500' },
-    { name: 'Settings', icon: Settings, color: 'bg-purple-500' },
-    { name: 'Documentation', icon: Globe, color: 'bg-orange-500' }
-  ]
+
 
   if (!isAuthenticated || !user) {
     return (
@@ -1011,26 +1002,7 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Quick Actions */}
-            <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {quickActions.map((action, index) => (
-                  <motion.button
-                    key={action.name}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={action.onClick}
-                    className="p-4 bg-gray-700/50 border border-gray-600 rounded-lg hover:border-gray-500 transition-colors text-center"
-                  >
-                    <div className={`w-8 h-8 ${action.color} rounded-lg flex items-center justify-center mx-auto mb-2`}>
-                      <action.icon className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="text-white text-xs font-medium">{action.name}</span>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
+
 
             {/* Recent Activity */}
             {analyticsData?.recent_activity && analyticsData.recent_activity.length > 0 && (
@@ -1125,44 +1097,7 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* System Status */}
-            <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <Shield className="h-5 w-5 mr-2 text-green-400" />
-                System Status
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                  <span className="text-gray-300">Redis Database</span>
-                  <span className="text-green-400 flex items-center">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                    Connected
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                  <span className="text-gray-300">API Gateway</span>
-                  <span className="text-green-400 flex items-center">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                    Healthy
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                  <span className="text-gray-300">Session</span>
-                  <span className="text-yellow-400 flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
-                    Active
-                  </span>
-                </div>
 
-                <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                  <span className="text-gray-300">Rate Limits</span>
-                  <span className="text-green-400">Normal</span>
-                </div>
-              </div>
-            </div>
           </motion.div>
         </div>
 
