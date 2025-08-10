@@ -117,7 +117,11 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/')
+    if (user?.userId && user.userId.startsWith('demo')) {
+      navigate('/login?demo=true')
+    } else {
+      navigate('/')
+    }
   }
 
   const handleRefresh = async () => {
