@@ -448,7 +448,7 @@ const Dashboard = () => {
         {/* Stats Grid */}
         <div 
           data-tour="stats-overview"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
         >
           {dashboardStats.map((stat, index) => (
             <motion.div
@@ -456,17 +456,21 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10"
+              className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 relative"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                </div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-2xl font-bold text-white">{stat.value}</h3>
                 <TrendingUp className="h-4 w-4 text-green-400" />
               </div>
-              <h3 className="text-3xl font-bold text-white mb-1">{stat.value}</h3>
-              <p className="text-gray-400 text-sm mb-2">{stat.title}</p>
-              <p className="text-xs text-green-400">{stat.change}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">{stat.title}</p>
+                  <p className="text-xs text-green-400">{stat.change}</p>
+                </div>
+                <div className={`p-2 rounded-md ${stat.bgColor}`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -1299,3 +1303,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+
