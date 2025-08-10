@@ -16,7 +16,8 @@ import {
   CheckCircle,
   AlertCircle,
   Wifi,
-  WifiOff
+  WifiOff,
+  Zap
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '../services/api'
@@ -33,6 +34,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [selectedDemo, setSelectedDemo] = useState(null)
   const [backendStatus, setBackendStatus] = useState(null)
+  const [isGeneratingDemo, setIsGeneratingDemo] = useState(false)
   
   // Check if this is a demo login flow
   const isDemoFlow = new URLSearchParams(location.search).get('demo') === 'true'
@@ -78,15 +80,37 @@ const LoginPage = () => {
     toast.success(`🎯 Demo user ${demoUser.userId} selected!`)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const generateRandomDemoCredentials = () => {
+    setIsGeneratingDemo(true)
     
-    if (!formData.userId || !formData.password) {
+    // Generate a random number between 1 and 999
+    const randomNum = Math.floor(Math.random() * 999) + 1
+    const paddedNum = randomNum.toString().padStart(3, '0')
+    
+    const demoUserId = `demo${paddedNum}`
+    const demoPassword = `pass${paddedNum}`
+    
+    setFormData({
+      userId: demoUserId,
+      password: demoPassword
+    })
+    
+    setSelectedDemo(null)
+    
+    toast.success(`🎲 Generated demo credentials: ${demoUserId}`)
+    
+    performLogin(demoUserId, demoPassword)
+    
+    setIsGeneratingDemo(false)
+  }
+
+  const performLogin = async (userId, password) => {
+    if (!userId || !password) {
       toast.error('📝 Please fill in all fields')
       return
     }
 
-    const result = await login(formData.userId, formData.password)
+    const result = await login(userId, password)
     
     if (result.success) {
       toast.success('🚀 Redirecting to dashboard...')
@@ -95,6 +119,11 @@ const LoginPage = () => {
       // Error is already handled in AuthContext with beautiful messages
       // No need to show additional toast here
     }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    await performLogin(formData.userId, formData.password)
   }
 
   const containerVariants = {
@@ -231,30 +260,15 @@ const LoginPage = () => {
           >
             <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 shadow-2xl">
               
-              {/* Form Header */}
-              <motion.div variants={itemVariants} className="text-center mb-8">
-                {isDemoFlow && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg"
-                  >
-                    <div className="flex items-center justify-center text-blue-300">
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      <span className="text-sm font-medium">Demo Login</span>
-                    </div>
-                    <p className="text-xs text-blue-200 mt-1">
-                      You'll see the demo guide after login
-                    </p>
-                  </motion.div>
-                )}
-                {!isDemoFlow && (
-                  <>
-                    <h2 className="text-2xl font-bold text-white mb-2">Login to KeyPilot</h2>
-                    <p className="text-gray-400">Access your API management dashboard</p>
-                  </>
-                )}
-              </motion.div>
+                             {/* Form Header */}
+               <motion.div variants={itemVariants} className="text-center mb-8">
+                 {!isDemoFlow && (
+                   <>
+                     <h2 className="text-2xl font-bold text-white mb-2">Login to KeyPilot</h2>
+                     <p className="text-gray-400">Access your API management dashboard</p>
+                   </>
+                 )}
+               </motion.div>
 
               {/* Demo Users */}
               {demoUsers.length > 0 && (
@@ -281,6 +295,31 @@ const LoginPage = () => {
                   </div>
                 </motion.div>
               )}
+
+                             {/* Random Demo Credentials Generator */}
+               {isDemoFlow && (
+                 <motion.div variants={itemVariants} className="mb-6">
+                   <motion.button
+                     onClick={generateRandomDemoCredentials}
+                     disabled={isGeneratingDemo || isLoading}
+                     whileHover={{ scale: isGeneratingDemo || isLoading ? 1 : 1.02 }}
+                     whileTap={{ scale: isGeneratingDemo || isLoading ? 1 : 0.98 }}
+                     className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                   >
+                     {isGeneratingDemo ? (
+                       <>
+                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                         Generating...
+                       </>
+                     ) : (
+                       <>
+                         <Sparkles className="h-5 w-5 mr-2" />
+                         Generate Demo Credentials & Login
+                       </>
+                     )}
+                   </motion.button>
+                 </motion.div>
+               )}
 
               {/* Login Form */}
               <motion.form variants={itemVariants} onSubmit={handleSubmit} className="space-y-6">
