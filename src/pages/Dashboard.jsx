@@ -641,7 +641,7 @@ const Dashboard = () => {
                         <p className="text-sm font-medium text-white">{apiKey.usage?.daily_usage || 0}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-xs text-gray-400">Weekly Usage (7 days)</p>
+                        <p className="text-xs text-gray-400">Weekly Usage</p>
                         <p className="text-sm font-medium text-white">{apiKey.usage?.weekly_usage || 0}</p>
                       </div>
                       <div className="text-center">
