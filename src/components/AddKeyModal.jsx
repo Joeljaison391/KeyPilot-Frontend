@@ -12,8 +12,12 @@ import {
 } from 'lucide-react'
 import { apiKeysAPI, authAPI } from '../services/api'
 import toast from 'react-hot-toast'
+import { useApiKeyTutorial } from '../context/ApiKeyTutorialContext'
+import ApiKeyTutorialOverlay from './ApiKeyTutorialOverlay'
 
 const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = false }) => {
+  const { checkShouldStartTutorial, markFirstApiKeyAdded, resetTutorial } = useApiKeyTutorial()
+  
   const [formData, setFormData] = useState({
     api_key: '',
     description: '',
@@ -22,8 +26,18 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
     max_requests_per_week: 5000,
     max_tokens_per_day: 100000,
     max_payload_kb: 1000,
-    expiry_date: '',
-    allowed_origins: [''],
+    expiry_date: (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 1);
+      // Format for datetime-local input: YYYY-MM-DDTHH:MM
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    })(),
+    allowed_origins: ['https://myapp.com'],
     scopes: ['']
   })
   
@@ -39,8 +53,12 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
   useEffect(() => {
     if (isOpen) {
       fetchTemplates()
+      // Check if tutorial should start for first-time users
+      if (!isEditMode) {
+        checkShouldStartTutorial()
+      }
     }
-  }, [isOpen])
+  }, [isOpen, isEditMode, checkShouldStartTutorial])
 
   // Populate form when in edit mode
   useEffect(() => {
@@ -58,7 +76,17 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         scopes: editKey.scopes || ['']
       })
     } else {
-      // Reset form for add mode
+             // Reset form for add mode with default expiry date (tomorrow)
+       const tomorrow = new Date()
+       tomorrow.setDate(tomorrow.getDate() + 1)
+       // Format for datetime-local input: YYYY-MM-DDTHH:MM
+       const year = tomorrow.getFullYear();
+       const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+       const day = String(tomorrow.getDate()).padStart(2, '0');
+       const hours = String(tomorrow.getHours()).padStart(2, '0');
+       const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+       const tomorrowISO = `${year}-${month}-${day}T${hours}:${minutes}`;
+      
       setFormData({
         api_key: '',
         description: '',
@@ -67,8 +95,8 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         max_requests_per_week: 5000,
         max_tokens_per_day: 100000,
         max_payload_kb: 1000,
-        expiry_date: '',
-        allowed_origins: [''],
+        expiry_date: tomorrowISO,
+        allowed_origins: ['https://myapp.com'],
         scopes: ['']
       })
     }
@@ -215,12 +243,22 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
       newErrors.template = 'Template is required'
     }
     
+    if (!formData.expiry_date.trim()) {
+      newErrors.expiry_date = 'Expiry date is required'
+    }
+    
     if (formData.max_requests_per_day < 1) {
       newErrors.max_requests_per_day = 'Must be at least 1'
     }
     
     if (formData.max_requests_per_week < formData.max_requests_per_day) {
       newErrors.max_requests_per_week = 'Must be greater than daily limit'
+    }
+
+    // Validate allowed origins
+    const validOrigins = formData.allowed_origins.filter(origin => origin.trim())
+    if (validOrigins.length === 0) {
+      newErrors.allowed_origins = 'At least one allowed origin is required'
     }
 
     // Validate scopes
@@ -275,11 +313,26 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
         }
       }
       
-      if (response.success) {
+            if (response.success) {
+        // Mark first API key as added for tutorial purposes
+        if (!isEditMode) {
+          markFirstApiKeyAdded()
+        }
+        
         onSuccess()
         onClose()
-        // Reset form for add mode
-        if (!isEditMode) {
+                 // Reset form for add mode
+         if (!isEditMode) {
+           const tomorrow = new Date()
+           tomorrow.setDate(tomorrow.getDate() + 1)
+           // Format for datetime-local input: YYYY-MM-DDTHH:MM
+           const year = tomorrow.getFullYear();
+           const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+           const day = String(tomorrow.getDate()).padStart(2, '0');
+           const hours = String(tomorrow.getHours()).padStart(2, '0');
+           const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+           const tomorrowISO = `${year}-${month}-${day}T${hours}:${minutes}`;
+          
           setFormData({
             api_key: '',
             description: '',
@@ -288,8 +341,8 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
             max_requests_per_week: 5000,
             max_tokens_per_day: 100000,
             max_payload_kb: 1000,
-            expiry_date: '',
-            allowed_origins: [''],
+            expiry_date: tomorrowISO,
+            allowed_origins: ['https://myapp.com'],
             scopes: ['']
           })
           setSelectedTemplate(null)
@@ -350,25 +403,37 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
             className="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-auto custom-scrollbar"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <Key className="h-5 w-5 text-blue-400" />
+                          <div className="flex items-center justify-between p-6 border-b border-gray-700">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Key className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-white">
+                      {isEditMode ? 'Edit API Key' : 'Add New API Key'}
+                    </h2>
+                    <p className="text-gray-400 text-sm">Configure your API key with custom limits and settings</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    {isEditMode ? 'Edit API Key' : 'Add New API Key'}
-                  </h2>
-                  <p className="text-gray-400 text-sm">Configure your API key with custom limits and settings</p>
+                <div className="flex items-center space-x-2">
+                  {/* Debug button for testing tutorial - can be removed in production */}
+                  {!isEditMode && (
+                    <button
+                      onClick={resetTutorial}
+                      className="text-xs px-2 py-1 bg-gray-600 text-gray-300 rounded hover:bg-gray-500 transition-colors"
+                      title="Reset tutorial for testing"
+                    >
+                      Reset Tutorial
+                    </button>
+                  )}
+                  <button
+                    onClick={onClose}
+                    className="p-2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -378,7 +443,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                 <div className="space-y-6">
                   
                   {/* Template Selection */}
-                  <div>
+                  <div data-tutorial="template-selection">
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       <Settings className="inline h-4 w-4 mr-2" />
                       Choose Template
@@ -441,6 +506,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                       {!isEditMode && (
                         <button
                           type="button"
+                          data-tutorial="demo-key-button"
                           onClick={handleDemoApiKeyFill}
                           className="text-xs px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors"
                         >
@@ -475,7 +541,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                   </div>
 
                   {/* Description */}
-                  <div>
+                  <div data-tutorial="description-field">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Description *
                     </label>
@@ -484,7 +550,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                       value={formData.description}
                       onChange={handleInputChange}
                       rows="3"
-                      placeholder="Describe what this API key will be used for..."
+                      placeholder="e.g., Chat completion for customer support, Text analysis for content moderation, AI-powered search functionality..."
                       className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors resize-none ${
                         errors.description 
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
@@ -500,7 +566,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                   </div>
 
                   {/* Template Name */}
-                  <div>
+                  <div data-tutorial="template-name-field">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Template Name *
                     </label>
@@ -509,7 +575,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                       name="template"
                       value={formData.template}
                       onChange={handleInputChange}
-                      placeholder="my-unique-template-name"
+                      placeholder="e.g., my-chat-completion, customer-support-ai, content-moderation"
                       className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${
                         errors.template 
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
@@ -529,7 +595,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                 <div className="space-y-6">
                   
                   {/* Rate Limits */}
-                  <div>
+                  <div data-tutorial="rate-limits-section">
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       <Shield className="inline h-4 w-4 mr-2" />
                       Rate Limits
@@ -583,25 +649,35 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                   </div>
 
                   {/* Expiry Date */}
-                  <div>
+                  <div data-tutorial="expiry-date-field">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       <Calendar className="inline h-4 w-4 mr-2" />
-                      Expiry Date (Optional)
+                      Expiry Date (Required)
                     </label>
                     <input
                       type="datetime-local"
                       name="expiry_date"
                       value={formData.expiry_date}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-white focus:outline-none focus:ring-1 transition-colors ${
+                        errors.expiry_date 
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                          : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500'
+                      }`}
                     />
+                    {errors.expiry_date && (
+                      <p className="mt-1 text-sm text-red-400 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors.expiry_date}
+                      </p>
+                    )}
                   </div>
 
                   {/* Allowed Origins */}
-                  <div>
+                  <div data-tutorial="allowed-origins-section">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       <Globe className="inline h-4 w-4 mr-2" />
-                      Allowed Origins
+                      Allowed Origins *
                     </label>
                     {formData.allowed_origins.map((origin, index) => (
                       <div key={index} className="flex items-center space-x-2 mb-2">
@@ -630,10 +706,16 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                     >
                       + Add Origin
                     </button>
+                    {errors.allowed_origins && (
+                      <p className="mt-1 text-sm text-red-400 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors.allowed_origins}
+                      </p>
+                    )}
                   </div>
 
                   {/* Scopes */}
-                  <div>
+                  <div data-tutorial="scopes-section">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Scopes *
                     </label>
@@ -664,6 +746,9 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                     >
                       + Add Scope
                     </button>
+                    <p className="mt-2 text-xs text-gray-400">
+                      Common scopes: text, chat, completion, gemini, analysis, moderation
+                    </p>
                     {errors.scopes && (
                       <p className="mt-1 text-sm text-red-400 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
@@ -685,6 +770,7 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
                 </button>
                 <button
                   type="submit"
+                  data-tutorial="submit-button"
                   disabled={isLoading}
                   className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
@@ -759,6 +845,9 @@ const AddKeyModal = ({ isOpen, onClose, onSuccess, editKey = null, isEditMode = 
           </motion.div>
         </motion.div>
       )}
+
+      {/* API Key Tutorial Overlay */}
+      <ApiKeyTutorialOverlay />
     </AnimatePresence>
   )
 }
