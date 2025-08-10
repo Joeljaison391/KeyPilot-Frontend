@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
 import { ConsentProvider } from './context/ConsentContext'
 import { TourProvider } from './context/TourContext'
+import { ApiKeyTutorialProvider } from './context/ApiKeyTutorialContext'
 import WelcomePage from './pages/WelcomePage'
 import ConsentProtectedRoute from './components/ConsentProtectedRoute'
 import LandingPage from './components/LandingPage'
@@ -88,7 +89,9 @@ function App() {
   return (
     <ConsentProvider>
       <TourProvider>
-        <AppContent />
+        <ApiKeyTutorialProvider>
+          <AppContent />
+        </ApiKeyTutorialProvider>
       </TourProvider>
     </ConsentProvider>
   )
