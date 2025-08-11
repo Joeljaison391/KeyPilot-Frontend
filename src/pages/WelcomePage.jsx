@@ -19,7 +19,10 @@ import {
 } from 'lucide-react'
 import { useConsent } from '../context/ConsentContext'
 import demoVideo from '../assets/KeyPilot Demo.mp4'
-
+import demoLoginImage from '../assets/demoLogin.png'
+import addApiImage from '../assets/addApi.png'
+import playgroundImage from '../assets/playground.png'
+import dashboardImage from '../assets/dashboard.png'
 const WelcomePage = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
@@ -58,6 +61,7 @@ const WelcomePage = () => {
     {
       title: "Login with Demo Credentials",
       description: "Use any of the provided demo user accounts to access the platform",
+      image: demoLoginImage,
       code: `
 // Demo Users Available:
 - demo1 (password: pass1)
@@ -68,25 +72,30 @@ const WelcomePage = () => {
     {
       title: "Add API Keys",
       description: "Click 'Use Demo Key' to auto-fill with a demo API key for testing",
+      image: addApiImage,
       code: `
 // Demo API Key Format:
 sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
       `
     },
     {
-      title: "Configure Templates",
-      description: "Select from pre-configured templates for different AI providers",
+      title: "Dashboard Overview",
+      description: "Explore the comprehensive dashboard to monitor your API usage, view analytics, and manage your keys",
+      image: dashboardImage, // Will be replaced with dashboard.png when available
       code: `
-// Available Templates:
-- OpenAI GPT Models
-- Claude Models  
-- Gemini Models
-- Custom Templates
+// Dashboard Features:
+- Real-time API Usage Analytics
+- Key Performance Metrics
+- Request Monitoring & Logs
+- Rate Limiting Status
+- Cache Hit/Miss Statistics
+- Error Tracking & Alerts
       `
     },
     {
       title: "Test Your Setup",
       description: "Use the playground to test API calls and monitor usage",
+      image: playgroundImage,
       code: `
 // Test Features:
 - Intent Testing
@@ -325,19 +334,30 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
                         <h3 className="text-xl font-semibold text-white">{step.title}</h3>
                       </div>
                       
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <p className="text-gray-300 mb-4">{step.description}</p>
-                          
-                          {/* Placeholder for screenshot */}
-                          <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 text-center">
-                            <div className="text-gray-500">
-                              <BookOpen className="h-12 w-12 mx-auto mb-2" />
-                              <p>Screenshot: {step.title}</p>
-                              <p className="text-xs">Image coming soon</p>
-                            </div>
-                          </div>
-                        </div>
+                                             <div className="grid md:grid-cols-2 gap-6">
+                         <div>
+                           <p className="text-gray-300 mb-4">{step.description}</p>
+                           
+                           {/* Screenshot */}
+                           <div className="bg-gray-900/50 border border-gray-700 rounded-lg overflow-hidden">
+                             {step.image ? (
+                               <img 
+                                 src={step.image} 
+                                 alt={`Screenshot: ${step.title}`}
+                                 className="w-full h-auto object-cover"
+                                 loading="lazy"
+                               />
+                             ) : (
+                               <div className="p-8 text-center">
+                                 <div className="text-gray-500">
+                                   <BookOpen className="h-12 w-12 mx-auto mb-2" />
+                                   <p>Screenshot: {step.title}</p>
+                                   <p className="text-xs">Dashboard image coming soon</p>
+                                 </div>
+                               </div>
+                             )}
+                           </div>
+                         </div>
                         
                         <div>
                           <h4 className="text-lg font-medium text-white mb-2">Example Code/Config:</h4>
