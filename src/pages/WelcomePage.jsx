@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
 import { 
@@ -14,15 +14,20 @@ import {
   AlertTriangle,
   ArrowLeft,
   Database,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react'
 import { useConsent } from '../context/ConsentContext'
+import demoVideo from '../assets/KeyPilot Demo.mp4'
 
 const WelcomePage = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
   const [hasReadTerms, setHasReadTerms] = useState(false)
   const [consentChecked, setConsentChecked] = useState(false)
+  const [videoError, setVideoError] = useState(false)
+  const [isVideoLoading, setIsVideoLoading] = useState(false)
+  const videoRef = useRef(null)
   const { giveConsent } = useConsent()
 
   const handleProceed = () => {
@@ -32,6 +37,21 @@ const WelcomePage = () => {
     
     giveConsent() // Store consent in global state
     navigate('/login?demo=true')
+  }
+
+  const handleVideoError = () => {
+    setVideoError(true)
+    setIsVideoLoading(false)
+  }
+
+  const handleVideoLoad = () => {
+    setIsVideoLoading(false)
+  }
+
+  const handleVideoClick = () => {
+    if (videoRef.current) {
+      videoRef.current.play()
+    }
   }
 
   const demoSteps = [
@@ -196,28 +216,93 @@ sk-demo1234567890abcdef1234567890abcdef1234567890abcdef
                       <Play className="h-6 w-6 mr-3 text-blue-400" />
                       Demo Walkthrough Video
                     </h2>
-                    <div className="aspect-video bg-gray-900/50 border border-gray-700 rounded-xl flex items-center justify-center relative overflow-hidden">
-                      {/* Video Placeholder */}
-                      <div className="text-center z-10">
-                        <div className="bg-blue-500/20 rounded-full p-6 inline-block mb-4">
-                          <Play className="h-16 w-16 text-blue-400" />
+                    
+                    <div className="aspect-video bg-gray-900/50 border border-gray-700 rounded-xl relative overflow-hidden">
+                      {!videoError ? (
+                        // YouTube Video (Primary)
+                        <iframe
+                          src="https://www.youtube.com/embed/cemS_zdPVJ0?si=NS4XRUtsBnb4kxwn&autoplay=0&rel=0&modestbranding=1"
+                          title="KeyPilot Demo Walkthrough"
+                          className="w-full h-full rounded-xl"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          onError={handleVideoError}
+                        />
+                      ) : (
+                        // Local MP4 Fallback
+                        <div className="relative w-full h-full">
+                          {isVideoLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 z-10">
+                              <div className="text-center">
+                                <Loader2 className="h-8 w-8 text-blue-400 animate-spin mx-auto mb-2" />
+                                <p className="text-gray-300">Loading video...</p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          <video
+                            ref={videoRef}
+                            className="w-full h-full object-cover rounded-xl"
+                            controls
+                            preload="metadata"
+                            onLoadStart={() => setIsVideoLoading(true)}
+                            onLoadedData={handleVideoLoad}
+                            onError={handleVideoError}
+                            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%231f2937'/%3E%3Ccircle cx='8' cy='4.5' r='2' fill='%233b82f6'/%3E%3Cpolygon points='6,3 6,6 9,4.5' fill='white'/%3E%3C/svg%3E"
+                          >
+                            <source src={demoVideo} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                          
+                          {/* Play Button Overlay */}
+                          {!isVideoLoading && (
+                            <button
+                              onClick={handleVideoClick}
+                              className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/40 transition-colors group"
+                            >
+                              <div className="bg-blue-500/90 group-hover:bg-blue-600 rounded-full p-4 transform group-hover:scale-110 transition-transform">
+                                <Play className="h-8 w-8 text-white ml-1" />
+                              </div>
+                            </button>
+                          )}
                         </div>
-                        <h3 className="text-xl font-semibold text-white mb-2">Demo Video Coming Soon</h3>
-                        <p className="text-gray-300 mb-2">Complete walkthrough of KeyPilot features</p>
-                        <p className="text-gray-500 text-sm">Duration: ~10 minutes</p>
-                        <button className="mt-4 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
-                          Watch Tutorial
-                        </button>
-                      </div>
+                      )}
                       
-                      {/* Background Pattern */}
-                      <div className="absolute inset-0 opacity-5">
-                        <div className="grid grid-cols-8 grid-rows-4 h-full w-full">
-                          {Array.from({length: 32}).map((_, i) => (
-                            <div key={i} className="border border-blue-500/20"></div>
-                          ))}
+                      {/* Video Info */}
+                      <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-white font-medium">KeyPilot Demo Walkthrough</h3>
+                            <p className="text-gray-300 text-sm">
+                              {!videoError ? 'YouTube Video' : 'Local Demo Video'}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {!videoError && (
+                              <a
+                                href="https://youtu.be/cemS_zdPVJ0?si=NS4XRUtsBnb4kxwn"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 text-sm flex items-center"
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Open in YouTube
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Video Description */}
+                    <div className="mt-4 text-center">
+                      <p className="text-gray-300">
+                        Complete walkthrough of KeyPilot features and capabilities
+                      </p>
+                      <p className="text-gray-500 text-sm mt-1">
+                        Duration: ~10 minutes • {!videoError ? 'Streaming from YouTube' : 'Playing from local file'}
+                      </p>
                     </div>
                   </div>
                 </motion.div>
